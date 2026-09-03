@@ -479,13 +479,24 @@ auth.onAuthStateChanged(user => {
 
 /* ================== 資料載入（Firestore 即時同步） ================== */
 function loadSalonData(){
-  db.collection('salons').doc(currentUid).get().then(doc => {
+  const salonRef = db.collection('salons').doc(currentUid);
+  salonRef.get().then(doc => {
     if(doc.exists){
       salonSettings = Object.assign(salonSettings, doc.data());
       document.getElementById('salonNameDisplay').textContent = salonSettings.name || '我的店';
       renderSettings();
+    } else {
+      // 保險機制：帳號存在但店家資料遺失（例如註冊過程中斷），自動補建立一份
+      return salonRef.set({
+        name: '我的店', bizStart: 9, bizEnd: 20, createdAt: new Date().toISOString()
+      }).then(()=>{
+        salonSettings = Object.assign(salonSettings, { name:'我的店', bizStart:9, bizEnd:20 });
+        document.getElementById('salonNameDisplay').textContent = '我的店';
+        renderSettings();
+        showToast('已自動補上店家設定資料');
+      });
     }
-  });
+  }).catch(err => showToast('讀取店家資料失敗：' + err.message));
 
   unsubStaff = db.collection('salons').doc(currentUid).collection('staff')
     .onSnapshot(snap => {
