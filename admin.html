@@ -313,7 +313,7 @@ nav.bottom button.active{color:var(--pink);}
     </div>
   </main>
 
-  <button class="fab" onclick="openForm()">＋</button>
+  <button class="fab" onclick="handleFabClick()">＋</button>
 
   <nav class="bottom">
     <button class="active" data-view="dashboard" onclick="showView('dashboard')"><span class="ic">🏠</span>儀表板</button>
@@ -523,6 +523,13 @@ function showToast(msg){ const t=document.getElementById('toast'); t.textContent
 function el(tag, className, text){ const e=document.createElement(tag); if(className) e.className=className; if(text!==undefined) e.textContent=text; return e; }
 function escapeHtml(str){ return String(str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function staffById(id){ return staffList.find(s=>s.id===id); }
+
+/* ================== FAB（根據目前頁面開對的表單） ================== */
+function handleFabClick(){
+  const active = document.querySelector('.view.active').id.replace('view-','');
+  if(active === 'staff'){ openStaffForm(); }
+  else { openForm(); }
+}
 
 /* ================== 視圖切換 ================== */
 function showView(name){
