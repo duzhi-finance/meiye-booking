@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>線上預約</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+:root{
+  --pink:#C9938A; --soft-pink:#E8C4BC; --light-pink:#F5E6E3;
+  --blue:#7A9BAD; --soft-blue:#B8CFDA; --light-blue:#E3EDF3;
+  --sage:#9AAE9B; --light-sage:#E8F0E8;
+  --cream:#FAF3EE; --bg:#FAFAF8; --dark:#37352F; --medium:#5A5248; --gray:#9B9A97;
+  --radius:18px;
+  --shadow: 0 8px 24px rgba(201,147,138,.14);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans TC', sans-serif; background:var(--bg); color:var(--dark); padding-bottom:30px; -webkit-font-smoothing:antialiased;}
+button, input, select, textarea{font-family:inherit; font-size:1rem;}
+button{cursor:pointer; border:none; background:none;}
+.hidden{display:none !important;}
+
+header.top{
+  background:linear-gradient(135deg, var(--light-pink), var(--cream) 60%);
+  padding:26px 20px 24px; border-bottom-left-radius:28px; border-bottom-right-radius:28px;
+  position:relative; overflow:hidden; text-align:center;
+}
+header.top::after{content:""; position:absolute; right:-40px; top:-40px; width:150px; height:150px; border-radius:50%;
+  background:radial-gradient(circle, var(--soft-pink) 0%, transparent 70%); opacity:.6;}
+header.top h1{font-size:1.3rem; font-weight:900; position:relative; z-index:1;}
+header.top .sub{font-size:.8rem; color:var(--medium); margin-top:4px; position:relative; z-index:1;}
+
+main{max-width:600px; margin:0 auto; padding:18px 16px 30px;}
+
+/* ---- Progress steps ---- */
+.steps{display:flex; justify-content:center; gap:6px; margin-bottom:20px;}
+.step-dot{width:8px; height:8px; border-radius:50%; background:var(--light-pink);}
+.step-dot.active{background:var(--pink); width:20px; border-radius:5px;}
+.step-dot.done{background:var(--soft-pink);}
+
+.card-section{background:#fff; border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); margin-bottom:16px;}
+.card-section h2{font-size:1.02rem; font-weight:700; margin-bottom:14px;}
+.back-link{font-size:.8rem; color:var(--medium); margin-bottom:10px; display:inline-block;}
+
+/* ---- Staff picker ---- */
+.staff-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.staff-pick{
+  border:1.5px solid var(--light-pink); border-radius:16px; padding:16px 10px; text-align:center;
+  background:#fff;
+}
+.staff-pick .dot{width:36px; height:36px; border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900;}
+.staff-pick b{font-size:.88rem; display:block;}
+.staff-pick .hrs{font-size:.7rem; color:var(--gray); margin-top:2px; display:block;}
+
+/* ---- Day strip ---- */
+.day-strip{display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:16px;}
+.day-chip{min-width:56px; text-align:center; padding:9px 4px; border-radius:14px; background:#fff; border:1.5px solid var(--light-pink); font-weight:700; color:var(--medium); flex-shrink:0;}
+.day-chip .dow{font-size:.66rem; display:block; color:var(--gray); font-weight:500;}
+.day-chip .num{font-size:1.05rem; display:block; margin-top:2px;}
+.day-chip.active{background:var(--pink); color:#fff; border-color:var(--pink);}
+.day-chip.active .dow{color:#fce8e5;}
+
+/* ---- Time slots ---- */
+.slot-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+.slot-btn{padding:12px 4px; border-radius:14px; border:1.5px solid var(--light-pink); background:#fff; font-weight:700; font-size:.88rem; color:var(--dark);}
+.slot-btn:disabled{background:var(--bg); color:var(--gray); border-color:var(--bg); text-decoration:line-through; opacity:.6;}
+.slot-btn.selected{background:var(--pink); color:#fff; border-color:var(--pink);}
+.empty-msg{text-align:center; color:var(--gray); font-size:.85rem; padding:22px 10px;}
+
+/* ---- Form ---- */
+.field{margin-bottom:14px;}
+.field label{font-size:.8rem; font-weight:700; color:var(--medium); display:block; margin-bottom:6px;}
+.field input, .field select, .field textarea{width:100%; padding:11px 13px; border-radius:12px; border:1.5px solid var(--light-pink); background:#fff; color:var(--dark);}
+.field textarea{resize:vertical; min-height:60px;}
+.picked-summary{background:var(--light-pink); border-radius:14px; padding:12px 14px; font-size:.82rem; margin-bottom:16px; line-height:1.7;}
+.btn-main{width:100%; background:var(--pink); color:#fff; font-weight:700; padding:14px; border-radius:16px; font-size:.95rem;}
+
+.success-box{background:#fff; border-radius:var(--radius); padding:36px 24px; text-align:center; box-shadow:var(--shadow);}
+.success-box .emoji{font-size:3rem; margin-bottom:12px;}
+.success-box h2{font-size:1.15rem; font-weight:900; margin-bottom:8px;}
+.success-box p{font-size:.85rem; color:var(--medium); line-height:1.6;}
+
+.toast{position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--dark); color:#fff; padding:10px 18px;
+  border-radius:20px; font-size:.85rem; font-weight:500; z-index:100; opacity:0; pointer-events:none; transition:opacity .25s;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1 id="salonName">線上預約</h1>
+  <div class="sub">選美容師 → 選日期 → 選時段，三步完成預約</div>
+</header>
+
+<main>
+  <div class="steps" id="stepsDots"></div>
+
+  <!-- Step 1: 選美容師 -->
+  <div class="card-section" id="stepStaff">
+    <h2>第一步：選擇美容師</h2>
+    <div class="staff-grid" id="staffGrid"></div>
+  </div>
+
+  <!-- Step 2: 選日期 -->
+  <div class="card-section hidden" id="stepDate">
+    <a class="back-link" onclick="goStep(1)">← 重選美容師</a>
+    <h2>第二步：選擇日期</h2>
+    <div class="day-strip" id="dayStrip"></div>
+  </div>
+
+  <!-- Step 3: 選時段 -->
+  <div class="card-section hidden" id="stepTime">
+    <a class="back-link" onclick="goStep(2)">← 重選日期</a>
+    <h2>第三步：選擇時段</h2>
+    <div class="slot-grid" id="slotGrid"></div>
+  </div>
+
+  <!-- Step 4: 填資料 -->
+  <div class="card-section hidden" id="stepForm">
+    <a class="back-link" onclick="goStep(3)">← 重選時段</a>
+    <h2>填寫預約資料</h2>
+    <div class="picked-summary" id="pickedSummary">--</div>
+    <div class="field"><label>姓名 *</label><input type="text" id="cName" placeholder="您的姓名"></div>
+    <div class="field"><label>電話 *</label><input type="tel" id="cPhone" placeholder="09xx-xxx-xxx"></div>
+    <div class="field"><label>服務項目 *</label><input type="text" id="cService" placeholder="例如：光療美甲"></div>
+    <div class="field"><label>備註</label><textarea id="cNote" placeholder="有其他需求可以先告訴我們"></textarea></div>
+    <button class="btn-main" onclick="submitBooking()">送出預約</button>
+  </div>
+
+  <div id="successBox" class="success-box hidden">
+    <div class="emoji">🌸</div>
+    <h2>預約已送出！</h2>
+    <p>店家確認後會透過電話與您聯繫確認時段，謝謝您的預約。</p>
+    <button class="btn-main" style="margin-top:18px;" onclick="location.reload()">再預約一筆</button>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAJH9aiE85y9SO3w7WBcGNE2mBWfs1hiYg",
+  authDomain: "booking20-c9a67.firebaseapp.com",
+  projectId: "booking20-c9a67",
+  storageBucket: "booking20-c9a67.firebasestorage.app",
+  messagingSenderId: "371446799734",
+  appId: "1:371446799734:web:12bf397103a666d2492e57"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const params = new URLSearchParams(location.search);
+const salonId = params.get('salon');
+
+let salonSettings = { name:'預約系統', bizStart:9, bizEnd:20 };
+let staffList = [];
+let busySlots = [];
+let currentStep = 1;
+let pickedStaff = null, pickedDate = null, pickedTime = null;
+const SLOT_MIN = 30;
+
+function pad(n){ return n.toString().padStart(2,'0'); }
+function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function el(tag, className, text){ const e=document.createElement(tag); if(className) e.className=className; if(text!==undefined) e.textContent=text; return e; }
+function escapeHtml(str){ return String(str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+
+if(!salonId){
+  document.querySelector('main').innerHTML = '<div class="empty-msg">連結不正確，缺少店家資訊。請確認你使用的是店家提供的完整預約連結。</div>';
+} else {
+  init();
+}
+
+function init(){
+  db.collection('salons').doc(salonId).get().then(doc=>{
+    if(doc.exists){
+      salonSettings = Object.assign(salonSettings, doc.data());
+      document.getElementById('salonName').textContent = salonSettings.name || '線上預約';
+    } else {
+      document.querySelector('main').innerHTML = '<div class="empty-msg">找不到這家店的預約資料。</div>';
+    }
+  });
+  db.collection('salons').doc(salonId).collection('staff').onSnapshot(snap=>{
+    staffList = snap.docs.map(d=>Object.assign({id:d.id}, d.data()));
+    staffList.sort((a,b)=>(a.order||0)-(b.order||0));
+    renderStaffGrid();
+  });
+  db.collection('salons').doc(salonId).collection('busySlots').onSnapshot(snap=>{
+    busySlots = snap.docs.map(d=>Object.assign({id:d.id}, d.data()));
+    if(currentStep===3) renderSlots();
+  });
+  renderStepsDots();
+}
+
+function renderStepsDots(){
+  const wrap = document.getElementById('stepsDots');
+  wrap.innerHTML='';
+  for(let i=1;i<=4;i++){
+    const dot = el('div','step-dot'+(i===currentStep?' active':(i<currentStep?' done':'')));
+    wrap.appendChild(dot);
+  }
+}
+function goStep(n){
+  currentStep = n;
+  document.getElementById('stepStaff').classList.toggle('hidden', n!==1);
+  document.getElementById('stepDate').classList.toggle('hidden', n!==2);
+  document.getElementById('stepTime').classList.toggle('hidden', n!==3);
+  document.getElementById('stepForm').classList.toggle('hidden', n!==4);
+  renderStepsDots();
+  if(n===2) renderDayStrip();
+  if(n===3) renderSlots();
+  if(n===4) renderFormSummary();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---- Step 1: 美容師 ---- */
+function renderStaffGrid(){
+  const wrap = document.getElementById('staffGrid');
+  wrap.innerHTML='';
+  if(staffList.length===0){ wrap.innerHTML = '<div class="empty-msg">目前店家還沒有設定可預約的美容師</div>'; return; }
+  staffList.forEach(s=>{
+    const card = el('div','staff-pick');
+    card.innerHTML = `<div class="dot" style="background:${s.color||'#C9938A'}">${escapeHtml((s.name||'?')[0])}</div><b>${escapeHtml(s.name)}</b><span class="hrs">${s.workStart!=null?s.workStart+':00-'+s.workEnd+':00':''}</span>`;
+    card.onclick = ()=>{ pickedStaff = s; goStep(2); };
+    wrap.appendChild(card);
+  });
+}
+
+/* ---- Step 2: 日期 ---- */
+function renderDayStrip(){
+  const wrap = document.getElementById('dayStrip');
+  wrap.innerHTML='';
+  const today = startOfDay(new Date());
+  const dayNames = ['日','一','二','三','四','五','六'];
+  for(let i=0;i<14;i++){
+    const d = addDays(today,i);
+    const chip = el('div','day-chip'+(pickedDate && d.getTime()===pickedDate.getTime()?' active':''));
+    chip.innerHTML = `<span class="dow">${i===0?'今天':'週'+dayNames[d.getDay()]}</span><span class="num">${d.getMonth()+1}/${d.getDate()}</span>`;
+    chip.onclick = ()=>{ pickedDate = d; goStep(3); };
+    wrap.appendChild(chip);
+  }
+}
+
+/* ---- Step 3: 時段 ---- */
+function renderSlots(){
+  const wrap = document.getElementById('slotGrid');
+  wrap.innerHTML='';
+  if(!pickedStaff || !pickedDate) return;
+  const startH = pickedStaff.workStart ?? salonSettings.bizStart ?? 9;
+  const endH = pickedStaff.workEnd ?? salonSettings.bizEnd ?? 20;
+  const now = new Date();
+  const dayStart = new Date(pickedDate); const dayEnd = addDays(dayStart,1);
+  const daySlots = busySlots.filter(b=>{
+    const d = new Date(b.datetime);
+    return b.staffId===pickedStaff.id && d>=dayStart && d<dayEnd;
+  });
+
+  let count = 0;
+  for(let mins = startH*60; mins < endH*60; mins += SLOT_MIN){
+    const slotDate = new Date(pickedDate);
+    slotDate.setHours(0,0,0,0);
+    slotDate.setMinutes(mins);
+    const isPast = slotDate < now;
+    const isBusy = isOverlapping(slotDate, 60, daySlots);
+    const btn = el('button','slot-btn', `${pad(Math.floor(mins/60))}:${pad(mins%60)}`);
+    if(isPast || isBusy){ btn.disabled = true; }
+    else{
+      btn.onclick = ()=>{
+        pickedTime = slotDate;
+        document.querySelectorAll('.slot-btn').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        setTimeout(()=>goStep(4), 150);
+      };
+    }
+    wrap.appendChild(btn);
+    count++;
+  }
+  if(count===0){ wrap.innerHTML = '<div class="empty-msg">這天沒有可預約的時段</div>'; }
+}
+function isOverlapping(candidateStart, candidateDur, daySlots){
+  const cStart = candidateStart.getTime();
+  const cEnd = cStart + candidateDur*60000;
+  return daySlots.some(b=>{
+    const bStart = new Date(b.datetime).getTime();
+    const bEnd = bStart + (b.duration||60)*60000;
+    return cStart < bEnd && cEnd > bStart;
+  });
+}
+
+/* ---- Step 4: 表單 ---- */
+function renderFormSummary(){
+  const dow = ['日','一','二','三','四','五','六'][pickedTime.getDay()];
+  document.getElementById('pickedSummary').innerHTML =
+    `💇 ${escapeHtml(pickedStaff.name)}<br>📅 ${pickedTime.getMonth()+1}/${pickedTime.getDate()}（週${dow}） ${pad(pickedTime.getHours())}:${pad(pickedTime.getMinutes())}`;
+  document.getElementById('cName').value='';
+  document.getElementById('cPhone').value='';
+  document.getElementById('cService').value='';
+  document.getElementById('cNote').value='';
+}
+function submitBooking(){
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const service = document.getElementById('cService').value.trim();
+  const note = document.getElementById('cNote').value.trim();
+  if(!name || !phone || !service){ showToast('請填寫姓名、電話與服務項目'); return; }
+
+  const apptCol = db.collection('salons').doc(salonId).collection('appointments');
+  const slotCol = db.collection('salons').doc(salonId).collection('busySlots');
+  const apptRef = apptCol.doc();
+  const slotRef = slotCol.doc(apptRef.id);
+  const datetime = pickedTime.toISOString();
+  const duration = 60;
+
+  const batch = db.batch();
+  batch.set(apptRef, {
+    name, phone, service, note, staffId: pickedStaff.id, datetime, duration,
+    amount: 0, status: '待確認', createdAt: new Date().toISOString(), source: 'online'
+  });
+  batch.set(slotRef, { staffId: pickedStaff.id, datetime, duration });
+  batch.commit().then(()=>{
+    document.querySelectorAll('.card-section').forEach(s=>s.classList.add('hidden'));
+    document.getElementById('stepsDots').classList.add('hidden');
+    document.getElementById('successBox').classList.remove('hidden');
+  }).catch(err=>{
+    showToast('預約失敗，請稍後再試：' + err.message);
+  });
+}
+</script>
+</body>
+</html>

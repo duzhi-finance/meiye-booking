@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>美業預約後台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+:root{
+  --pink:#C9938A; --soft-pink:#E8C4BC; --light-pink:#F5E6E3;
+  --blue:#7A9BAD; --soft-blue:#B8CFDA; --light-blue:#E3EDF3;
+  --sage:#9AAE9B; --light-sage:#E8F0E8;
+  --cream:#FAF3EE; --bg:#FAFAF8; --dark:#37352F; --medium:#5A5248; --gray:#9B9A97;
+  --radius:18px;
+  --shadow: 0 8px 24px rgba(201,147,138,.14);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans TC', sans-serif; background:var(--bg); color:var(--dark); padding-bottom:84px; -webkit-font-smoothing:antialiased;}
+button, input, select, textarea{font-family:inherit; font-size:1rem;}
+button{cursor:pointer; border:none; background:none;}
+.hidden{display:none !important;}
+
+/* ---- Auth screen ---- */
+#authScreen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(160deg, var(--light-pink), var(--cream) 60%);
+  padding:24px;
+}
+.auth-card{
+  background:#fff; border-radius:24px; padding:30px 26px; width:100%; max-width:380px;
+  box-shadow:var(--shadow);
+}
+.auth-card h1{font-size:1.4rem; font-weight:900; margin-bottom:4px;}
+.auth-card .sub{font-size:.82rem; color:var(--medium); margin-bottom:22px;}
+.field{margin-bottom:14px;}
+.field label{font-size:.8rem; font-weight:700; color:var(--medium); display:block; margin-bottom:6px;}
+.field input, .field select, .field textarea{
+  width:100%; padding:11px 13px; border-radius:12px; border:1.5px solid var(--light-pink);
+  background:#fff; color:var(--dark);
+}
+.field textarea{resize:vertical; min-height:60px;}
+.btn-main{
+  width:100%; background:var(--pink); color:#fff; font-weight:700; padding:13px;
+  border-radius:16px; font-size:.95rem; margin-top:6px;
+}
+.btn-ghost{padding:13px 18px; border-radius:16px; font-weight:700; background:#fff; border:1.5px solid var(--light-pink); color:var(--medium);}
+.auth-toggle{text-align:center; margin-top:16px; font-size:.85rem; color:var(--medium);}
+.auth-toggle a{color:var(--pink); font-weight:700; cursor:pointer;}
+.auth-error{color:#b95c50; font-size:.8rem; margin-top:10px; text-align:center;}
+
+/* ---- Header / Nav ---- */
+header.top{
+  background:linear-gradient(135deg, var(--light-pink), var(--cream) 60%);
+  padding:20px 20px 24px; border-bottom-left-radius:28px; border-bottom-right-radius:28px;
+  position:relative; overflow:hidden;
+}
+header.top::after{content:""; position:absolute; right:-40px; top:-40px; width:150px; height:150px; border-radius:50%;
+  background:radial-gradient(circle, var(--soft-pink) 0%, transparent 70%); opacity:.6;}
+.brand{display:flex; align-items:center; justify-content:space-between; position:relative; z-index:1;}
+.brand h1{font-size:1.2rem; font-weight:900;}
+.brand .sub{font-size:.78rem; color:var(--medium); margin-top:2px; font-weight:500;}
+.icon-btn{width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.7); display:flex; align-items:center; justify-content:center; font-size:1.05rem; box-shadow:var(--shadow);}
+
+main{max-width:960px; margin:0 auto; padding:18px 16px 12px;}
+.view{display:none;}
+.view.active{display:block; animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+section{margin-bottom:24px;}
+.section-title{font-size:1.02rem; font-weight:700; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between;}
+.section-title .hint{font-size:.76rem; color:var(--gray); font-weight:400;}
+
+/* ---- Dashboard ---- */
+.stat-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
+.stat-card{background:#fff; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); border:1px solid var(--light-pink);}
+.stat-card .label{font-size:.78rem; color:var(--medium); font-weight:500;}
+.stat-card .value{font-size:1.6rem; font-weight:900; margin-top:6px;}
+.stat-card.pink{background:linear-gradient(150deg,#fff, var(--light-pink));}
+.stat-card.blue{background:linear-gradient(150deg,#fff, var(--light-blue));}
+.stat-card.sage{background:linear-gradient(150deg,#fff, var(--light-sage));}
+.stat-card.cream{background:linear-gradient(150deg,#fff, var(--cream));}
+@media(min-width:640px){.stat-grid{grid-template-columns:repeat(4,1fr);}}
+
+.reminder-card{background:#fff; border-radius:14px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between;
+  box-shadow:var(--shadow); margin-bottom:10px; border-left:4px solid var(--pink);}
+.reminder-card .info b{font-size:.95rem;}
+.reminder-card .info .meta{font-size:.78rem; color:var(--medium); margin-top:2px;}
+.mini-btn{background:var(--pink); color:#fff; font-weight:700; font-size:.78rem; padding:7px 12px; border-radius:20px; white-space:nowrap;}
+.empty-msg{text-align:center; color:var(--gray); font-size:.85rem; padding:22px 10px;}
+
+/* ---- Day strip ---- */
+.day-strip{display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:14px;}
+.day-chip{
+  min-width:52px; text-align:center; padding:8px 4px; border-radius:14px; background:#fff;
+  border:1.5px solid var(--light-pink); font-weight:700; color:var(--medium); flex-shrink:0;
+}
+.day-chip .dow{font-size:.66rem; display:block; color:var(--gray); font-weight:500;}
+.day-chip .num{font-size:1.05rem; display:block; margin-top:2px;}
+.day-chip.active{background:var(--pink); color:#fff; border-color:var(--pink);}
+.day-chip.active .dow{color:#fce8e5;}
+
+/* ---- Staff timeline ---- */
+.timeline-wrap{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); overflow-x:auto; padding:10px;}
+.timeline-grid{display:flex; min-width:100%;}
+.time-col{width:44px; flex-shrink:0; padding-top:38px;}
+.time-col .tl{font-size:.68rem; color:var(--gray); text-align:right; padding-right:6px; position:relative; top:-6px;}
+.staff-cols{display:flex; flex:1; gap:6px;}
+.staff-col{min-width:150px; flex:1;}
+.staff-head{display:flex; align-items:center; gap:8px; padding:6px 4px 10px;}
+.staff-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+.staff-head b{font-size:.85rem;}
+.staff-head .hrs{font-size:.66rem; color:var(--gray); display:block;}
+.staff-track{position:relative; border-left:1px solid var(--light-pink); border-radius:8px; background:repeating-linear-gradient(
+    to bottom, transparent, transparent 59px, var(--light-pink) 59px, var(--light-pink) 60px);
+}
+.appt-block{
+  position:absolute; left:2px; right:2px; border-radius:10px; padding:6px 8px; overflow:hidden;
+  font-size:.72rem; color:#fff; cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,.1);
+}
+.appt-block b{display:block; font-size:.78rem; font-weight:700;}
+.appt-block .svc{opacity:.9; font-size:.68rem;}
+.appt-block.cancelled{opacity:.45; text-decoration:line-through;}
+
+/* ---- List ---- */
+.search-bar{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
+.search-bar input[type="text"]{flex:1; min-width:150px; padding:11px 14px; border-radius:14px; border:1.5px solid var(--light-pink); background:#fff;}
+.search-bar select{padding:11px 12px; border-radius:14px; border:1.5px solid var(--light-pink); background:#fff; color:var(--medium);}
+.filter-chips{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+.chip{padding:6px 14px; border-radius:20px; font-size:.8rem; font-weight:700; background:#fff; color:var(--medium); border:1.5px solid var(--light-pink);}
+.chip.active{background:var(--pink); color:#fff; border-color:var(--pink);}
+
+.appt-card{background:#fff; border-radius:16px; padding:14px 16px; box-shadow:var(--shadow); margin-bottom:10px;
+  display:flex; gap:12px; align-items:flex-start; border:1px solid var(--light-pink);}
+.appt-time{min-width:60px; text-align:center; padding-top:2px;}
+.appt-time .t{font-weight:900; font-size:.95rem;}
+.appt-time .m{font-size:.66rem; color:var(--gray);}
+.appt-body{flex:1;}
+.appt-body .row1{display:flex; justify-content:space-between; align-items:center; gap:8px;}
+.appt-body .name{font-weight:700; font-size:1rem;}
+.appt-body .service{font-size:.83rem; color:var(--medium); margin-top:2px;}
+.appt-body .sub{font-size:.76rem; color:var(--gray); margin-top:4px;}
+.appt-actions{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
+.appt-actions button{font-size:.72rem; font-weight:700; padding:6px 10px; border-radius:14px; background:var(--light-blue); color:var(--blue);}
+.appt-actions button.danger{background:#fbe4e1; color:#b95c50;}
+.appt-actions button.done{background:var(--light-sage); color:#5a7a5b;}
+.badge{font-size:.66rem; font-weight:700; padding:3px 9px; border-radius:20px; white-space:nowrap;}
+.badge.待確認{background:var(--light-blue); color:var(--blue);}
+.badge.已確認{background:var(--light-pink); color:var(--pink);}
+.badge.已完成{background:var(--light-sage); color:#5a7a5b;}
+.badge.未到{background:#f1e2e2; color:#a35a5a;}
+.badge.已取消{background:#ece9e4; color:var(--gray);}
+
+/* ---- Staff mgmt ---- */
+.staff-card{background:#fff; border-radius:16px; padding:14px 16px; box-shadow:var(--shadow); margin-bottom:10px;
+  display:flex; align-items:center; gap:12px;}
+.staff-card .dot{width:16px; height:16px; border-radius:50%; flex-shrink:0;}
+.staff-card .info{flex:1;}
+.staff-card .info b{font-size:.95rem;}
+.staff-card .info .hrs{font-size:.76rem; color:var(--gray);}
+.color-picker{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;}
+.color-swatch{width:30px; height:30px; border-radius:50%; border:2px solid transparent; cursor:pointer;}
+.color-swatch.sel{border-color:var(--dark);}
+
+/* ---- Modal ---- */
+.modal-bg{position:fixed; inset:0; background:rgba(55,53,47,.35); display:none; align-items:flex-end; justify-content:center; z-index:50;}
+.modal-bg.active{display:flex;}
+.modal{background:var(--bg); width:100%; max-width:480px; border-radius:24px 24px 0 0; padding:22px 20px 26px; max-height:90vh; overflow-y:auto; animation:slideUp .25s ease;}
+@media(min-width:600px){.modal-bg{align-items:center;} .modal{border-radius:24px; max-height:85vh;}}
+@keyframes slideUp{from{transform:translateY(30px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+.modal h2{font-size:1.15rem; font-weight:900; margin-bottom:16px;}
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.status-picker{display:flex; gap:6px; flex-wrap:wrap;}
+.status-picker button{padding:8px 12px; border-radius:14px; font-size:.8rem; font-weight:700; border:1.5px solid var(--light-pink); background:#fff; color:var(--medium);}
+.status-picker button.sel{background:var(--pink); color:#fff; border-color:var(--pink);}
+.modal-actions{display:flex; gap:10px; margin-top:18px;}
+.modal-actions .btn-main{flex:1; margin-top:0;}
+
+/* ---- Settings ---- */
+.settings-panel{background:#fff; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); margin-bottom:14px;}
+.settings-panel h3{font-size:.9rem; font-weight:700; margin-bottom:10px;}
+.settings-panel p{font-size:.78rem; color:var(--gray); margin-bottom:12px; line-height:1.6;}
+.link-box{display:flex; gap:8px; align-items:center; background:var(--light-pink); padding:10px 12px; border-radius:12px; font-size:.78rem; word-break:break-all;}
+.link-box button{background:var(--pink); color:#fff; padding:6px 12px; border-radius:10px; font-size:.72rem; font-weight:700; flex-shrink:0;}
+
+/* ---- FAB & bottom nav ---- */
+.fab{position:fixed; right:20px; bottom:88px; width:56px; height:56px; border-radius:50%; background:var(--pink); color:#fff;
+  font-size:1.6rem; box-shadow:0 10px 24px rgba(201,147,138,.4); display:flex; align-items:center; justify-content:center; z-index:40;}
+nav.bottom{position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--light-pink);
+  display:flex; justify-content:space-around; padding:8px 2px 10px; z-index:40; overflow-x:auto;}
+nav.bottom button{display:flex; flex-direction:column; align-items:center; gap:2px; font-size:.64rem; color:var(--gray); font-weight:700; padding:4px 6px; flex-shrink:0;}
+nav.bottom button .ic{font-size:1.1rem;}
+nav.bottom button.active{color:var(--pink);}
+
+.toast{position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--dark); color:#fff; padding:10px 18px;
+  border-radius:20px; font-size:.85rem; font-weight:500; z-index:100; opacity:0; pointer-events:none; transition:opacity .25s;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- ===================== 登入 / 註冊 ===================== -->
+<div id="authScreen">
+  <div class="auth-card">
+    <h1 id="authTitle">老闆娘登入 🌸</h1>
+    <div class="sub" id="authSub">登入你的美業預約後台</div>
+
+    <div class="field" id="salonNameField" style="display:none;">
+      <label>店名</label>
+      <input type="text" id="regSalonName" placeholder="例如：粉嫩美甲工作室">
+    </div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="authEmail" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label>密碼</label>
+      <input type="password" id="authPassword" placeholder="至少 6 碼">
+    </div>
+    <button class="btn-main" id="authSubmitBtn" onclick="handleAuthSubmit()">登入</button>
+    <div class="auth-error hidden" id="authError"></div>
+    <div class="auth-toggle">
+      <span id="authToggleText">還沒有帳號？</span>
+      <a onclick="toggleAuthMode()" id="authToggleLink">註冊新帳號</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 主應用程式 ===================== -->
+<div id="app" class="hidden">
+  <header class="top">
+    <div class="brand">
+      <div>
+        <h1 id="salonNameDisplay">我的店</h1>
+        <div class="sub" id="todayLabel">--</div>
+      </div>
+      <button class="icon-btn" onclick="handleLogout()">🚪</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- 儀表板 -->
+    <div class="view active" id="view-dashboard">
+      <section>
+        <div class="stat-grid">
+          <div class="stat-card pink"><div class="label">今日預約</div><div class="value" id="statToday">0</div></div>
+          <div class="stat-card blue"><div class="label">本週預約</div><div class="value" id="statWeek">0</div></div>
+          <div class="stat-card sage"><div class="label">本月營收</div><div class="value" id="statRevenue">$0</div></div>
+          <div class="stat-card cream"><div class="label">待提醒</div><div class="value" id="statRemind">0</div></div>
+        </div>
+      </section>
+      <section>
+        <div class="section-title">即將提醒</div>
+        <div id="reminderList"></div>
+      </section>
+    </div>
+
+    <!-- 行事曆（分美容師） -->
+    <div class="view" id="view-calendar">
+      <div class="day-strip" id="dayStrip"></div>
+      <div class="timeline-wrap">
+        <div class="timeline-grid" id="timelineGrid"></div>
+      </div>
+    </div>
+
+    <!-- 預約列表 -->
+    <div class="view" id="view-list">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="搜尋姓名／電話／服務項目">
+        <select id="rangeFilter">
+          <option value="all">全部日期</option>
+          <option value="today">今天</option>
+          <option value="week">本週</option>
+          <option value="month">本月</option>
+          <option value="past">已過期</option>
+        </select>
+      </div>
+      <div class="filter-chips" id="statusChips"></div>
+      <div id="listContainer"></div>
+    </div>
+
+    <!-- 員工管理 -->
+    <div class="view" id="view-staff">
+      <div class="section-title">美容師 / 美甲師 <span class="hint">會顯示為行事曆分欄</span></div>
+      <div id="staffContainer"></div>
+    </div>
+
+    <!-- 設定 -->
+    <div class="view" id="view-settings">
+      <div class="settings-panel">
+        <h3>客戶預約連結</h3>
+        <p>把這個連結放進 LINE 官方帳號的選單或訊息裡，客人點開就能自己選時段預約。</p>
+        <div class="link-box">
+          <span id="bookingLink">--</span>
+          <button onclick="copyBookingLink()">複製</button>
+        </div>
+      </div>
+      <div class="settings-panel">
+        <h3>營業時間</h3>
+        <p>用於行事曆顯示的時間範圍。</p>
+        <div class="field-row">
+          <div class="field"><label>開始時間</label><select id="bizStart"></select></div>
+          <div class="field"><label>結束時間</label><select id="bizEnd"></select></div>
+        </div>
+        <button class="btn-main" onclick="saveBizHours()">儲存設定</button>
+      </div>
+      <div class="settings-panel">
+        <h3>關於 LINE 官方帳號自動提醒</h3>
+        <p>目前提醒訊息是系統自動整理好文字，由你手動複製貼到 LINE 傳送給客人（在「即將提醒」卡片按「產生提醒訊息」）。若要做到真正自動推播，需要另外串接 LINE Messaging API 搭配伺服器功能，之後可以再幫你加上。</p>
+      </div>
+    </div>
+  </main>
+
+  <button class="fab" onclick="openForm()">＋</button>
+
+  <nav class="bottom">
+    <button class="active" data-view="dashboard" onclick="showView('dashboard')"><span class="ic">🏠</span>儀表板</button>
+    <button data-view="calendar" onclick="showView('calendar')"><span class="ic">📅</span>行事曆</button>
+    <button data-view="list" onclick="showView('list')"><span class="ic">📋</span>列表</button>
+    <button data-view="staff" onclick="showView('staff')"><span class="ic">💇</span>員工</button>
+    <button data-view="settings" onclick="showView('settings')"><span class="ic">⚙️</span>設定</button>
+  </nav>
+</div>
+
+<!-- 新增/編輯 預約 Modal -->
+<div class="modal-bg" id="formModal">
+  <div class="modal">
+    <h2 id="formTitle">新增預約</h2>
+    <input type="hidden" id="editId">
+    <div class="field"><label>姓名 *</label><input type="text" id="fName" placeholder="例如：陳小美"></div>
+    <div class="field"><label>電話 *</label><input type="tel" id="fPhone" placeholder="09xx-xxx-xxx"></div>
+    <div class="field"><label>指定美容師 *</label><select id="fStaff"></select></div>
+    <div class="field"><label>服務項目 *</label><input type="text" id="fService" placeholder="例如：光療美甲"></div>
+    <div class="field-row">
+      <div class="field"><label>金額 *</label><input type="number" id="fAmount" placeholder="0" min="0"></div>
+      <div class="field"><label>時長（分鐘）</label><input type="number" id="fDuration" value="60" min="15" step="15"></div>
+    </div>
+    <div class="field"><label>日期時間 *</label><input type="datetime-local" id="fDatetime"></div>
+    <div class="field"><label>狀態</label><div class="status-picker" id="statusPicker"></div></div>
+    <div class="field"><label>備註</label><textarea id="fNote" placeholder="客人偏好、注意事項..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeForm()">取消</button>
+      <button class="btn-main" onclick="saveAppointment()">儲存預約</button>
+    </div>
+  </div>
+</div>
+
+<!-- 員工 Modal -->
+<div class="modal-bg" id="staffModal">
+  <div class="modal">
+    <h2 id="staffFormTitle">新增員工</h2>
+    <input type="hidden" id="editStaffId">
+    <div class="field"><label>姓名 *</label><input type="text" id="sName" placeholder="例如：Patricia"></div>
+    <div class="field-row">
+      <div class="field"><label>上班時間</label><select id="sStart"></select></div>
+      <div class="field"><label>下班時間</label><select id="sEnd"></select></div>
+    </div>
+    <div class="field">
+      <label>代表色</label>
+      <div class="color-picker" id="colorPicker"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeStaffForm()">取消</button>
+      <button class="btn-main" onclick="saveStaff()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 提醒訊息 Modal -->
+<div class="modal-bg" id="msgModal">
+  <div class="modal">
+    <h2>提醒訊息</h2>
+    <div class="field"><textarea id="msgText" style="min-height:120px;"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeMsgModal()">關閉</button>
+      <button class="btn-main" onclick="copyMsg()">📋 複製訊息</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================== Firebase 初始化 ================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAJH9aiE85y9SO3w7WBcGNE2mBWfs1hiYg",
+  authDomain: "booking20-c9a67.firebaseapp.com",
+  projectId: "booking20-c9a67",
+  storageBucket: "booking20-c9a67.firebasestorage.app",
+  messagingSenderId: "371446799734",
+  appId: "1:371446799734:web:12bf397103a666d2492e57"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const STATUSES = ['待確認','已確認','已完成','未到','已取消'];
+const COLOR_PALETTE = ['#C9938A','#7A9BAD','#9AAE9B','#B8A6C9','#D4A574','#8AA6C9'];
+
+let currentUid = null;
+let salonSettings = { name:'', bizStart:9, bizEnd:20 };
+let staffList = [];
+let appointments = [];
+let currentStatusFilter = 'all';
+let selectedDate = startOfDay(new Date());
+let unsubStaff = null, unsubAppts = null;
+let isRegisterMode = false;
+let formStatus = '待確認';
+let selectedColor = COLOR_PALETTE[0];
+
+/* ================== Auth ================== */
+function toggleAuthMode(){
+  isRegisterMode = !isRegisterMode;
+  document.getElementById('authTitle').textContent = isRegisterMode ? '建立新帳號 🌸' : '老闆娘登入 🌸';
+  document.getElementById('authSub').textContent = isRegisterMode ? '建立你的美業預約後台' : '登入你的美業預約後台';
+  document.getElementById('salonNameField').style.display = isRegisterMode ? 'block' : 'none';
+  document.getElementById('authSubmitBtn').textContent = isRegisterMode ? '註冊' : '登入';
+  document.getElementById('authToggleText').textContent = isRegisterMode ? '已經有帳號？' : '還沒有帳號？';
+  document.getElementById('authToggleLink').textContent = isRegisterMode ? '登入' : '註冊新帳號';
+  document.getElementById('authError').classList.add('hidden');
+}
+function handleAuthSubmit(){
+  const email = document.getElementById('authEmail').value.trim();
+  const pw = document.getElementById('authPassword').value;
+  const errBox = document.getElementById('authError');
+  errBox.classList.add('hidden');
+  if(!email || !pw){ showAuthError('請輸入 Email 和密碼'); return; }
+
+  if(isRegisterMode){
+    const salonName = document.getElementById('regSalonName').value.trim() || '我的店';
+    auth.createUserWithEmailAndPassword(email, pw)
+      .then(cred => {
+        return db.collection('salons').doc(cred.user.uid).set({
+          name: salonName, bizStart: 9, bizEnd: 20, createdAt: new Date().toISOString()
+        });
+      })
+      .catch(err => showAuthError(translateAuthError(err)));
+  } else {
+    auth.signInWithEmailAndPassword(email, pw)
+      .catch(err => showAuthError(translateAuthError(err)));
+  }
+}
+function showAuthError(msg){
+  const box = document.getElementById('authError');
+  box.textContent = msg;
+  box.classList.remove('hidden');
+}
+function translateAuthError(err){
+  const map = {
+    'auth/email-already-in-use':'這個 Email 已經註冊過了，請直接登入',
+    'auth/invalid-email':'Email 格式不正確',
+    'auth/weak-password':'密碼至少要 6 碼',
+    'auth/user-not-found':'找不到這個帳號',
+    'auth/wrong-password':'密碼錯誤',
+    'auth/invalid-credential':'帳號或密碼錯誤'
+  };
+  return map[err.code] || ('發生錯誤：' + err.message);
+}
+function handleLogout(){
+  if(unsubStaff) unsubStaff();
+  if(unsubAppts) unsubAppts();
+  auth.signOut();
+}
+
+auth.onAuthStateChanged(user => {
+  if(user){
+    currentUid = user.uid;
+    document.getElementById('authScreen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    loadSalonData();
+  } else {
+    currentUid = null;
+    document.getElementById('authScreen').classList.remove('hidden');
+    document.getElementById('app').classList.add('hidden');
+  }
+});
+
+/* ================== 資料載入（Firestore 即時同步） ================== */
+function loadSalonData(){
+  db.collection('salons').doc(currentUid).get().then(doc => {
+    if(doc.exists){
+      salonSettings = Object.assign(salonSettings, doc.data());
+      document.getElementById('salonNameDisplay').textContent = salonSettings.name || '我的店';
+      renderSettings();
+    }
+  });
+
+  unsubStaff = db.collection('salons').doc(currentUid).collection('staff')
+    .onSnapshot(snap => {
+      staffList = snap.docs.map(d => Object.assign({id:d.id}, d.data()));
+      staffList.sort((a,b)=> (a.order||0) - (b.order||0));
+      renderAll();
+    });
+
+  unsubAppts = db.collection('salons').doc(currentUid).collection('appointments')
+    .onSnapshot(snap => {
+      appointments = snap.docs.map(d => Object.assign({id:d.id}, d.data()));
+      renderAll();
+    });
+
+  const link = `${location.origin}${location.pathname.replace('admin.html','booking.html')}?salon=${currentUid}`;
+  document.getElementById('bookingLink').textContent = link;
+}
+function renderAll(){
+  renderDashboard();
+  renderCalendar();
+  renderList();
+  renderStaffList();
+}
+
+/* ================== 工具函式 ================== */
+function pad(n){ return n.toString().padStart(2,'0'); }
+function fmtDate(d){ return `${d.getMonth()+1}/${d.getDate()}`; }
+function fmtTime(d){ return `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+function fmtMoney(n){ return '$' + Number(n||0).toLocaleString(); }
+function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
+function startOfWeek(d){ const x=startOfDay(d); const day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); return x; }
+function toLocalInputValue(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+function sortedAppointments(){ return [...appointments].sort((a,b)=> new Date(a.datetime)-new Date(b.datetime)); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+function el(tag, className, text){ const e=document.createElement(tag); if(className) e.className=className; if(text!==undefined) e.textContent=text; return e; }
+function escapeHtml(str){ return String(str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function staffById(id){ return staffList.find(s=>s.id===id); }
+
+/* ================== 視圖切換 ================== */
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('nav.bottom button').forEach(b=> b.classList.toggle('active', b.dataset.view===name));
+  renderAll();
+}
+
+/* ================== 儀表板 ================== */
+function renderDashboard(){
+  const now = new Date();
+  document.getElementById('todayLabel').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+  document.getElementById('statToday').textContent = countInRange(startOfDay(now), addDays(startOfDay(now),1));
+  document.getElementById('statWeek').textContent = countInRange(startOfWeek(now), addDays(startOfWeek(now),7));
+  document.getElementById('statRevenue').textContent = fmtMoney(monthRevenue());
+  const rem = upcomingForReminder();
+  document.getElementById('statRemind').textContent = rem.length;
+  renderReminderList(rem);
+}
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function countInRange(s,e){ return appointments.filter(a=>{ const d=new Date(a.datetime); return d>=s && d<e && a.status!=='已取消'; }).length; }
+function monthRevenue(){
+  const now = new Date();
+  return appointments.filter(a=>{ const d=new Date(a.datetime); return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth() && a.status!=='已取消'; })
+    .reduce((s,a)=> s+Number(a.amount||0), 0);
+}
+function upcomingForReminder(){
+  const now = new Date(); const in24 = new Date(now.getTime()+24*3600*1000);
+  return sortedAppointments().filter(a=>{ const d=new Date(a.datetime); return d>=now && d<=in24 && a.status!=='已取消' && a.status!=='已完成'; });
+}
+function renderReminderList(list){
+  const wrap = document.getElementById('reminderList');
+  wrap.innerHTML='';
+  if(list.length===0){ wrap.appendChild(el('div','empty-msg','24 小時內沒有需要提醒的預約 🌿')); return; }
+  list.forEach(a=>{
+    const d = new Date(a.datetime);
+    const card = el('div','reminder-card');
+    card.innerHTML = `<div class="info"><b>${escapeHtml(a.name)}</b><div class="meta">${fmtDate(d)} ${fmtTime(d)}・${escapeHtml(a.service)}</div></div>`;
+    const btn = el('button','mini-btn','產生提醒訊息');
+    btn.onclick = ()=>openMsgModal(a);
+    card.appendChild(btn);
+    wrap.appendChild(card);
+  });
+}
+
+/* ================== 行事曆（分美容師） ================== */
+function renderDayStrip(){
+  const wrap = document.getElementById('dayStrip');
+  wrap.innerHTML='';
+  const start = startOfWeek(new Date());
+  const dayNames = ['一','二','三','四','五','六','日'];
+  for(let i=0;i<7;i++){
+    const d = addDays(start,i);
+    const chip = el('div','day-chip'+(d.getTime()===selectedDate.getTime()?' active':''));
+    chip.innerHTML = `<span class="dow">週${dayNames[i]}</span><span class="num">${d.getDate()}</span>`;
+    chip.onclick = ()=>{ selectedDate = d; renderCalendar(); };
+    wrap.appendChild(chip);
+  }
+}
+function renderCalendar(){
+  renderDayStrip();
+  const grid = document.getElementById('timelineGrid');
+  grid.innerHTML='';
+  const startH = salonSettings.bizStart ?? 9, endH = salonSettings.bizEnd ?? 20;
+  const totalHours = endH - startH;
+  const rowH = 60;
+
+  if(staffList.length===0){
+    grid.innerHTML = '<div class="empty-msg" style="padding:30px;">還沒有員工，請先到「員工」頁新增美容師</div>';
+    return;
+  }
+
+  const timeCol = el('div','time-col');
+  for(let h=startH; h<=endH; h++){
+    const lbl = el('div','tl', h+':00'); lbl.style.height = (h===endH?0:rowH)+'px';
+    timeCol.appendChild(lbl);
+  }
+  grid.appendChild(timeCol);
+
+  const staffCols = el('div','staff-cols');
+  staffList.forEach(staff=>{
+    const col = el('div','staff-col');
+    const head = el('div','staff-head');
+    head.innerHTML = `<span class="staff-dot" style="background:${staff.color||'#C9938A'}"></span><div><b>${escapeHtml(staff.name)}</b><span class="hrs">${staff.workStart!=null?staff.workStart+':00-'+staff.workEnd+':00':''}</span></div>`;
+    col.appendChild(head);
+
+    const track = el('div','staff-track');
+    track.style.height = (totalHours*rowH)+'px';
+
+    const dayStart = new Date(selectedDate); dayStart.setHours(0,0,0,0);
+    const dayEnd = addDays(dayStart,1);
+    const dayAppts = appointments.filter(a=>{
+      const d = new Date(a.datetime);
+      return a.staffId===staff.id && d>=dayStart && d<dayEnd;
+    });
+    dayAppts.forEach(a=>{
+      const d = new Date(a.datetime);
+      const startMin = (d.getHours()-startH)*60 + d.getMinutes();
+      const durMin = a.duration || 60;
+      const top = (startMin/60)*rowH;
+      const height = Math.max((durMin/60)*rowH - 3, 24);
+      const block = el('div','appt-block'+(a.status==='已取消'?' cancelled':''));
+      block.style.top = top+'px';
+      block.style.height = height+'px';
+      block.style.background = staff.color || '#C9938A';
+      block.innerHTML = `<b>${fmtTime(d)} ${escapeHtml(a.name)}</b><span class="svc">${escapeHtml(a.service)}</span>`;
+      block.onclick = ()=> openForm(a.id);
+      track.appendChild(block);
+    });
+    col.appendChild(track);
+    staffCols.appendChild(col);
+  });
+  grid.appendChild(staffCols);
+}
+
+/* ================== 預約列表 ================== */
+function renderStatusChips(){
+  const wrap = document.getElementById('statusChips');
+  wrap.innerHTML='';
+  const all = el('div','chip'+(currentStatusFilter==='all'?' active':''),'全部');
+  all.onclick = ()=>{ currentStatusFilter='all'; renderList(); };
+  wrap.appendChild(all);
+  STATUSES.forEach(st=>{
+    const c = el('div','chip'+(currentStatusFilter===st?' active':''), st);
+    c.onclick = ()=>{ currentStatusFilter=st; renderList(); };
+    wrap.appendChild(c);
+  });
+}
+function renderList(){
+  renderStatusChips();
+  const q = (document.getElementById('searchInput').value||'').trim().toLowerCase();
+  const range = document.getElementById('rangeFilter').value;
+  const now = new Date();
+  let list = sortedAppointments();
+  if(currentStatusFilter!=='all') list = list.filter(a=>a.status===currentStatusFilter);
+  if(q) list = list.filter(a=> (a.name||'').toLowerCase().includes(q) || (a.phone||'').toLowerCase().includes(q) || (a.service||'').toLowerCase().includes(q));
+  if(range==='today'){ const s=startOfDay(now), e=addDays(s,1); list=list.filter(a=>{const d=new Date(a.datetime); return d>=s&&d<e;}); }
+  else if(range==='week'){ const s=startOfWeek(now), e=addDays(s,7); list=list.filter(a=>{const d=new Date(a.datetime); return d>=s&&d<e;}); }
+  else if(range==='month'){ list=list.filter(a=>{const d=new Date(a.datetime); return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();}); }
+  else if(range==='past'){ list=list.filter(a=> new Date(a.datetime) < now); }
+
+  const wrap = document.getElementById('listContainer');
+  wrap.innerHTML='';
+  if(list.length===0){ wrap.appendChild(el('div','empty-msg','沒有符合條件的預約')); return; }
+  list.forEach(a=> wrap.appendChild(buildApptCard(a)));
+}
+document.getElementById('searchInput').addEventListener('input', renderList);
+document.getElementById('rangeFilter').addEventListener('change', renderList);
+
+function buildApptCard(a){
+  const d = new Date(a.datetime);
+  const staff = staffById(a.staffId);
+  const card = el('div','appt-card');
+  card.innerHTML = `
+    <div class="appt-time"><div class="t">${fmtTime(d)}</div><div class="m">${fmtDate(d)}</div></div>
+    <div class="appt-body">
+      <div class="row1"><span class="name">${escapeHtml(a.name)}</span><span class="badge ${a.status}">${a.status}</span></div>
+      <div class="service">${escapeHtml(a.service)}・${fmtMoney(a.amount)}${staff?'・'+escapeHtml(staff.name):''}</div>
+      <div class="sub">${escapeHtml(a.phone||'')}${a.note?'・'+escapeHtml(a.note):''}</div>
+      <div class="appt-actions"></div>
+    </div>`;
+  const actions = card.querySelector('.appt-actions');
+  const editBtn = el('button','','編輯'); editBtn.onclick=()=>openForm(a.id);
+  const msgBtn = el('button','','提醒訊息'); msgBtn.onclick=()=>openMsgModal(a);
+  const doneBtn = el('button','done','完成'); doneBtn.onclick=()=>updateApptStatus(a.id,'已完成');
+  const delBtn = el('button','danger','刪除'); delBtn.onclick=()=>deleteAppt(a.id);
+  actions.appendChild(editBtn); actions.appendChild(msgBtn);
+  if(a.status!=='已完成') actions.appendChild(doneBtn);
+  actions.appendChild(delBtn);
+  return card;
+}
+function updateApptStatus(id, status){
+  db.collection('salons').doc(currentUid).collection('appointments').doc(id).update({status}).then(()=>showToast('已更新'));
+}
+function deleteAppt(id){
+  if(!confirm('確定要刪除這筆預約嗎？此動作無法復原。')) return;
+  const batch = db.batch();
+  batch.delete(db.collection('salons').doc(currentUid).collection('appointments').doc(id));
+  batch.delete(db.collection('salons').doc(currentUid).collection('busySlots').doc(id));
+  batch.commit().then(()=>showToast('已刪除'));
+}
+
+/* ================== 新增/編輯 預約表單 ================== */
+function openForm(id, prefillDate, prefillStaff){
+  document.getElementById('formTitle').textContent = id ? '編輯預約' : '新增預約';
+  document.getElementById('editId').value = id || '';
+  populateStaffSelect();
+  if(id){
+    const a = appointments.find(x=>x.id===id);
+    document.getElementById('fName').value = a.name;
+    document.getElementById('fPhone').value = a.phone;
+    document.getElementById('fStaff').value = a.staffId || '';
+    document.getElementById('fService').value = a.service;
+    document.getElementById('fAmount').value = a.amount;
+    document.getElementById('fDuration').value = a.duration || 60;
+    document.getElementById('fDatetime').value = toLocalInputValue(new Date(a.datetime));
+    document.getElementById('fNote').value = a.note || '';
+    formStatus = a.status;
+  } else {
+    document.getElementById('fName').value='';
+    document.getElementById('fPhone').value='';
+    document.getElementById('fStaff').value = prefillStaff || (staffList[0] ? staffList[0].id : '');
+    document.getElementById('fService').value='';
+    document.getElementById('fAmount').value='';
+    document.getElementById('fDuration').value=60;
+    const base = prefillDate || new Date(Date.now()+3600*1000);
+    document.getElementById('fDatetime').value = toLocalInputValue(base);
+    document.getElementById('fNote').value='';
+    formStatus = '待確認';
+  }
+  renderStatusPicker();
+  document.getElementById('formModal').classList.add('active');
+}
+function closeForm(){ document.getElementById('formModal').classList.remove('active'); }
+function populateStaffSelect(){
+  const sel = document.getElementById('fStaff');
+  sel.innerHTML = staffList.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+}
+function renderStatusPicker(){
+  const wrap = document.getElementById('statusPicker');
+  wrap.innerHTML='';
+  STATUSES.forEach(st=>{
+    const b = el('button', st===formStatus?'sel':'', st);
+    b.onclick = ()=>{ formStatus=st; renderStatusPicker(); };
+    wrap.appendChild(b);
+  });
+}
+function saveAppointment(){
+  const name = document.getElementById('fName').value.trim();
+  const phone = document.getElementById('fPhone').value.trim();
+  const staffId = document.getElementById('fStaff').value;
+  const service = document.getElementById('fService').value.trim();
+  const amount = document.getElementById('fAmount').value;
+  const duration = document.getElementById('fDuration').value;
+  const datetime = document.getElementById('fDatetime').value;
+  const note = document.getElementById('fNote').value.trim();
+  const id = document.getElementById('editId').value;
+
+  if(!name || !phone || !service || !datetime || !staffId){ showToast('請填寫姓名、電話、美容師、服務項目與時間'); return; }
+
+  const durationNum = Number(duration)||60;
+  const payload = { name, phone, staffId, service, amount:Number(amount)||0, duration:durationNum, datetime, note, status:formStatus };
+  const apptCol = db.collection('salons').doc(currentUid).collection('appointments');
+  const slotCol = db.collection('salons').doc(currentUid).collection('busySlots');
+  const apptRef = id ? apptCol.doc(id) : apptCol.doc();
+  const slotRef = slotCol.doc(apptRef.id);
+  const batch = db.batch();
+  if(id){ batch.update(apptRef, payload); } else { batch.set(apptRef, Object.assign({createdAt:new Date().toISOString()}, payload)); }
+  if(formStatus === '已取消'){ batch.delete(slotRef); }
+  else { batch.set(slotRef, { staffId, datetime, duration:durationNum }); }
+  batch.commit().then(()=>{ closeForm(); showToast('已儲存預約'); }).catch(err=>showToast('儲存失敗：'+err.message));
+}
+
+/* ================== 員工管理 ================== */
+function renderStaffList(){
+  const wrap = document.getElementById('staffContainer');
+  wrap.innerHTML='';
+  if(staffList.length===0){ wrap.appendChild(el('div','empty-msg','還沒有員工，按右下角「＋」新增')); }
+  staffList.forEach(s=>{
+    const card = el('div','staff-card');
+    card.innerHTML = `<div class="dot" style="background:${s.color||'#C9938A'}"></div>
+      <div class="info"><b>${escapeHtml(s.name)}</b><div class="hrs">${s.workStart!=null?s.workStart+':00 - '+s.workEnd+':00':''}</div></div>`;
+    const editBtn = el('button','mini-btn','編輯'); editBtn.style.background='var(--light-blue)'; editBtn.style.color='var(--blue)';
+    editBtn.onclick = ()=>openStaffForm(s.id);
+    const delBtn = el('button','mini-btn','刪除'); delBtn.style.background='#fbe4e1'; delBtn.style.color='#b95c50';
+    delBtn.onclick = ()=>deleteStaff(s.id);
+    card.appendChild(editBtn); card.appendChild(delBtn);
+    wrap.appendChild(card);
+  });
+}
+function openStaffForm(id){
+  document.getElementById('staffFormTitle').textContent = id ? '編輯員工' : '新增員工';
+  document.getElementById('editStaffId').value = id || '';
+  populateHourSelect('sStart'); populateHourSelect('sEnd');
+  if(id){
+    const s = staffList.find(x=>x.id===id);
+    document.getElementById('sName').value = s.name;
+    document.getElementById('sStart').value = s.workStart ?? 9;
+    document.getElementById('sEnd').value = s.workEnd ?? 18;
+    selectedColor = s.color || COLOR_PALETTE[0];
+  } else {
+    document.getElementById('sName').value='';
+    document.getElementById('sStart').value = 9;
+    document.getElementById('sEnd').value = 18;
+    selectedColor = COLOR_PALETTE[staffList.length % COLOR_PALETTE.length];
+  }
+  renderColorPicker();
+  document.getElementById('staffModal').classList.add('active');
+}
+function closeStaffForm(){ document.getElementById('staffModal').classList.remove('active'); }
+function renderColorPicker(){
+  const wrap = document.getElementById('colorPicker');
+  wrap.innerHTML='';
+  COLOR_PALETTE.forEach(c=>{
+    const sw = el('div','color-swatch'+(c===selectedColor?' sel':''));
+    sw.style.background = c;
+    sw.onclick = ()=>{ selectedColor=c; renderColorPicker(); };
+    wrap.appendChild(sw);
+  });
+}
+function saveStaff(){
+  const name = document.getElementById('sName').value.trim();
+  if(!name){ showToast('請輸入姓名'); return; }
+  const workStart = Number(document.getElementById('sStart').value);
+  const workEnd = Number(document.getElementById('sEnd').value);
+  const id = document.getElementById('editStaffId').value;
+  const payload = { name, workStart, workEnd, color:selectedColor, order: id ? undefined : staffList.length };
+  Object.keys(payload).forEach(k=> payload[k]===undefined && delete payload[k]);
+  const ref = db.collection('salons').doc(currentUid).collection('staff');
+  const p = id ? ref.doc(id).update(payload) : ref.add(payload);
+  p.then(()=>{ closeStaffForm(); showToast('已儲存'); }).catch(err=>showToast('儲存失敗：'+err.message));
+}
+function deleteStaff(id){
+  if(!confirm('確定要刪除這位員工嗎？該員工名下的預約不會被刪除，但會顯示不到分欄中。')) return;
+  db.collection('salons').doc(currentUid).collection('staff').doc(id).delete().then(()=>showToast('已刪除'));
+}
+function populateHourSelect(elemId){
+  const sel = document.getElementById(elemId);
+  sel.innerHTML='';
+  for(let h=0; h<24; h++) sel.appendChild(new Option(h+':00', h));
+}
+
+/* ================== 提醒訊息 ================== */
+function openMsgModal(a){
+  const d = new Date(a.datetime);
+  const msg = `您好 ${a.name}！提醒您預約於 ${fmtDate(d)}（${fmtTime(d)}）進行「${a.service}」服務，期待您的光臨 🌸\n若時間需要調整，請盡早告知我們，謝謝！`;
+  document.getElementById('msgText').value = msg;
+  document.getElementById('msgModal').classList.add('active');
+}
+function closeMsgModal(){ document.getElementById('msgModal').classList.remove('active'); }
+function copyMsg(){
+  const ta = document.getElementById('msgText'); ta.select();
+  try{ document.execCommand('copy'); showToast('已複製，可貼到 LINE 傳送給客人'); }
+  catch(e){ navigator.clipboard?.writeText(ta.value); showToast('已複製到剪貼簿'); }
+}
+
+/* ================== 設定 ================== */
+function renderSettings(){
+  const s = document.getElementById('bizStart'), e = document.getElementById('bizEnd');
+  s.innerHTML=''; e.innerHTML='';
+  for(let h=0; h<24; h++){ s.appendChild(new Option(h+':00', h)); e.appendChild(new Option(h+':00', h)); }
+  s.value = salonSettings.bizStart ?? 9;
+  e.value = salonSettings.bizEnd ?? 20;
+}
+function saveBizHours(){
+  const s = Number(document.getElementById('bizStart').value);
+  const e = Number(document.getElementById('bizEnd').value);
+  if(e<=s){ showToast('結束時間需晚於開始時間'); return; }
+  salonSettings.bizStart = s; salonSettings.bizEnd = e;
+  db.collection('salons').doc(currentUid).update({bizStart:s, bizEnd:e})
+    .then(()=>{ showToast('已儲存設定'); renderCalendar(); });
+}
+function copyBookingLink(){
+  const text = document.getElementById('bookingLink').textContent;
+  navigator.clipboard?.writeText(text).then(()=>showToast('已複製預約連結'))
+    .catch(()=>showToast('複製失敗，請手動選取複製'));
+}
+</script>
+</body>
+</html>
