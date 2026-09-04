@@ -30,7 +30,7 @@ jobs:
       - name: Stage public files
         run: |
           mkdir _site
-          cp index.html admin.html booking.html _site/
+          cp index.html admin.html booking.html apple-touch-icon.png _site/
           cp -r demo _site/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
