@@ -1,9 +1,9 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
 <title>UIUX 預約票根</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎫</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='10' y='14' width='38' height='36' rx='6' fill='none' stroke='%2337352F' stroke-width='4.5'/><path d='M10 25H48' stroke='%2337352F' stroke-width='4.5'/><path d='M19 10V19M39 10V19' stroke='%2337352F' stroke-width='4.5' stroke-linecap='round'/><path d='M22 38L28 44L40 32' fill='none' stroke='%23C9938A' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chiron+Sung+HK&family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   color-scheme: light dark;
@@ -36,22 +36,22 @@
   --shadow: 0 30px 60px -20px rgba(0,0,0,.6);
 }
 *{box-sizing:border-box;}
-body{margin:0; background:var(--paper); color:var(--ink); font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; -webkit-font-smoothing:antialiased;}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; -webkit-font-smoothing:antialiased;}
 button,input,textarea{font-family:inherit;}
-h1,h2,h3,h4{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:500; text-wrap:balance;}
-.serif{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:700; letter-spacing:.02em;}
-.mono{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-variant-numeric:tabular-nums;}
+h1,h2,h3,h4{font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:500; text-wrap:balance;}
+.serif{font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:700; letter-spacing:.02em;}
+.mono{font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-variant-numeric:tabular-nums;}
 
 /* ---------------- page ---------------- */
 .screen{max-width:480px; margin:0 auto; padding-bottom:40px; position:relative;}
 .brandbar{padding:36px 22px 6px; text-align:center;}
-.brandbar .logo{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:1.6rem; font-weight:800; letter-spacing:.06em;}
+.brandbar .logo{font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:1.6rem; font-weight:800; letter-spacing:.06em;}
 .brandbar .tag{font-size:.72rem; color:var(--ink-faint); margin-top:4px;}
 
 .promo-banner{margin:14px 16px 0; background:var(--clay-pale); color:var(--clay-dim); font-size:.74rem; font-weight:600; text-align:center; padding:8px 12px; border-radius:10px;}
 
 .steps-row{display:flex; margin:16px 16px 18px;}
-.step-item{flex:1; text-align:center; font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.62rem; letter-spacing:.03em; color:var(--ink-faint); padding-top:8px; border-top:2px solid var(--line);}
+.step-item{flex:1; text-align:center; font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.62rem; letter-spacing:.03em; color:var(--ink-faint); padding-top:8px; border-top:2px solid var(--line);}
 .step-item .n{display:block; font-size:.82rem; margin-bottom:3px;}
 .step-item.active{color:var(--clay); border-color:var(--clay);}
 .step-item.done{color:var(--moss); border-color:var(--moss);}
@@ -76,18 +76,18 @@ h1,h2,h3,h4{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helve
 .avatar{width:42px; height:42px; border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:1.05rem;}
 .staff-card b{display:block; font-size:.9rem;}
 .staff-tag{display:inline-block; margin-top:5px; font-size:.63rem; padding:2px 9px; border-radius:20px; background:var(--clay-pale); color:var(--clay-dim);}
-.staff-hours{display:block; margin-top:6px; font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.6rem; color:var(--ink-faint);}
+.staff-hours{display:block; margin-top:6px; font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.6rem; color:var(--ink-faint);}
 
 .day-strip{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;}
 .day-chip{min-width:52px; text-align:center; padding:9px 4px; border-radius:14px; background:var(--panel); border:1px solid var(--line); flex-shrink:0; cursor:pointer;}
 .day-chip .dow{display:block; font-size:.6rem; color:var(--ink-faint);}
-.day-chip .num{display:block; margin-top:3px; font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.98rem; font-weight:600;}
+.day-chip .num{display:block; margin-top:3px; font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.98rem; font-weight:600;}
 .day-chip.active{background:var(--clay); border-color:var(--clay);}
 .day-chip.active .dow{color:rgba(255,255,255,.8);} .day-chip.active .num{color:#fff;}
 
 .slot-group h4{font-size:.86rem; font-weight:600; color:var(--ink-soft); margin:16px 0 8px;}
 .slot-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:7px;}
-.slot-btn{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.72rem; padding:9px 2px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer;}
+.slot-btn{font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.72rem; padding:9px 2px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer;}
 .slot-btn:hover:not(:disabled){border-color:var(--clay-soft);}
 .slot-btn:focus-visible{outline:2px solid var(--clay); outline-offset:1px;}
 .slot-btn:disabled{color:var(--ink-faint); text-decoration:line-through; opacity:.5; background:var(--panel-2); cursor:default;}
@@ -95,7 +95,7 @@ h1,h2,h3,h4{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helve
 .empty{text-align:center; color:var(--ink-faint); font-size:.82rem; padding:18px 8px;}
 
 .form-row{padding:10px 2px; border-bottom:1px dashed var(--line);}
-.form-row label{display:block; font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.62rem; letter-spacing:.04em; color:var(--ink-faint); margin-bottom:4px;}
+.form-row label{display:block; font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.62rem; letter-spacing:.04em; color:var(--ink-faint); margin-bottom:4px;}
 .form-row input,.form-row textarea{width:100%; border:none; background:transparent; color:var(--ink); font-size:.92rem; padding:2px 0; outline:none;}
 .form-row textarea{resize:vertical; min-height:44px; font-family:inherit;}
 .form-row:focus-within{border-bottom-color:var(--clay);}
@@ -108,7 +108,7 @@ h1,h2,h3,h4{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helve
 .success{padding:16px 22px 30px; text-align:center;}
 .stamp-wrap{position:relative; display:inline-block; margin:22px auto 10px; padding:10px 6px;}
 .stamp-wrap h3{font-size:1.4rem; font-weight:500; margin:0; position:relative; z-index:1; white-space:nowrap;}
-.stamp-big{position:absolute; left:50%; top:52%; transform:translate(-50%,-50%) rotate(-9deg); font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:900; font-size:2.5rem; letter-spacing:.14em; color:var(--moss); border:5px double var(--moss); padding:2px 20px; border-radius:14px; opacity:.62; mix-blend-mode:multiply; white-space:nowrap; z-index:0; pointer-events:none;}
+.stamp-big{position:absolute; left:50%; top:52%; transform:translate(-50%,-50%) rotate(-9deg); font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:900; font-size:2.5rem; letter-spacing:.14em; color:var(--moss); border:5px double var(--moss); padding:2px 20px; border-radius:14px; opacity:.62; mix-blend-mode:multiply; white-space:nowrap; z-index:0; pointer-events:none;}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .stamp-big{ mix-blend-mode:screen; opacity:.5; } }
 :root[data-theme="dark"] .stamp-big{ mix-blend-mode:screen; opacity:.5; }
 .success p{font-size:.85rem; color:var(--ink-soft); line-height:1.7; max-width:30ch; margin:8px auto 0;}
@@ -148,7 +148,7 @@ h1,h2,h3,h4{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helve
 .svc-chip{display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:14px; border:1.5px solid var(--line); background:var(--panel); cursor:pointer; text-align:left; width:100%;}
 .svc-chip .name{font-weight:700; font-size:.86rem;}
 .svc-chip .dur{font-size:.7rem; color:var(--ink-faint); margin-top:2px;}
-.svc-chip .price{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:700; font-size:.88rem; flex-shrink:0; margin-left:10px;}
+.svc-chip .price{font-family:'Chiron Sung HK', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:700; font-size:.88rem; flex-shrink:0; margin-left:10px;}
 .svc-chip.selected{background:var(--clay-pale); border-color:var(--clay);}
 .svc-chip.selected .price{color:var(--clay-dim);}
 
