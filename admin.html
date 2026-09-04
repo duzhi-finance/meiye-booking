@@ -227,16 +227,6 @@ section{margin-bottom:24px;}
 .notify-card .nhead{display:flex; justify-content:space-between; align-items:flex-start; gap:12px;}
 .bubble{background:var(--cream); border-radius:14px; border-top-left-radius:4px; padding:12px 14px; font-size:.78rem; line-height:1.7; margin-top:10px;}
 
-/* ---- 會員與行銷 tabs ---- */
-.subtabs{display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap;}
-.subtab{padding:7px 14px; border-radius:20px; border:1.5px solid var(--light-pink); background:#fff; font-size:.78rem; font-weight:700; color:var(--medium);}
-.subtab.active{background:var(--pink); border-color:var(--pink); color:#fff;}
-.subpanel{display:none;}
-.subpanel.active{display:block;}
-.tier-badge{width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.76rem; color:#fff; flex-shrink:0;}
-table.data{width:100%; border-collapse:collapse; font-size:.83rem;}
-table.data th{text-align:left; font-weight:700; color:var(--gray); font-size:.7rem; padding:0 8px 8px;}
-table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical-align:top;}
 
 /* ---- FAB ---- */
 .fab{position:fixed; right:24px; bottom:24px; width:56px; height:56px; border-radius:50%; background:var(--pink); color:#fff;
@@ -297,7 +287,6 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
         <li><button class="nav-item" data-view="form" onclick="showView('form')">📝 表單設定</button></li>
         <li><button class="nav-item" data-view="notify" onclick="showView('notify')">🔔 自動通知</button></li>
         <li><button class="nav-item" data-view="rules" onclick="showView('rules')">📏 預約規則</button></li>
-        <li><button class="nav-item" data-view="loyalty" onclick="showView('loyalty')">📢 優惠公告</button></li>
         <li><button class="nav-item" data-view="settings" onclick="showView('settings')">⚙️ 設定</button></li>
       </ul>
     </nav>
@@ -423,16 +412,6 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
         </div>
       </div>
 
-      <!-- 會員與行銷 -->
-      <div class="view" id="view-loyalty">
-        <div class="topbar"><h1>優惠公告</h1></div>
-        <p style="font-size:.78rem; color:var(--gray); margin:-8px 0 16px; line-height:1.6;">自己打字設定目前的優惠內容（例如新客折扣、生日禮、活動訊息），客人在預約頁會看到這段文字。系統不會判斷誰符合資格，也不會自動發送任何通知，單純是公告欄。</p>
-        <div class="settings-panel">
-          <div class="field"><label>優惠公告內容</label><textarea class="text-input" id="promoText" rows="5" placeholder="例如：新客首次到店 9 折｜生日當月享指定服務 8 折，使用期限至當月底"></textarea></div>
-          <button class="btn-main" onclick="savePromo()">儲存公告</button>
-        </div>
-      </div>
-
       <!-- 設定 -->
       <div class="view" id="view-settings">
         <div class="topbar"><h1>設定</h1></div>
@@ -550,7 +529,6 @@ let currentUid = null;
 let salonSettings = { name:'', bizStart:9, bizEnd:20,
   introForm:[{q:'是否第一次來店？', type:'single', opts:['是','否']}],
   notifySettings:{onSuccess:true, onReminder:true, onComplete:true},
-  promoText: '',
   bookingRules:{advanceDays:30, allowCancel:true, cancelHours:24, noShowLimit:3, dailyCap:0},
   services:[],
   storeInfo:{address:'', phone:''}
@@ -643,7 +621,6 @@ function loadSalonData(){
       renderFormQuestions();
       renderNotifyList();
       renderRulesFields();
-      renderPromo();
       renderServices();
       renderStoreInfo();
     } else {
@@ -1273,17 +1250,6 @@ function saveBookingRules(){
     .then(()=>showToast('已儲存設定')).catch(err=>showToast('儲存失敗：'+err.message));
 }
 
-/* ================== 優惠公告 ================== */
-function renderPromo(){
-  const t = document.getElementById('promoText');
-  if(t) t.value = salonSettings.promoText || '';
-}
-function savePromo(){
-  const promoText = document.getElementById('promoText').value.trim();
-  salonSettings.promoText = promoText;
-  db.collection('salons').doc(currentUid).update({promoText})
-    .then(()=>showToast('已儲存公告')).catch(err=>showToast('儲存失敗：'+err.message));
-}
 </script>
 </body>
 </html>

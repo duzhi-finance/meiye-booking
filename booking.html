@@ -37,7 +37,6 @@ header.top .sub{font-size:.8rem; color:var(--medium); margin-top:4px; position:r
 
 main{max-width:600px; margin:0 auto; padding:18px 16px 30px;}
 
-.promo-banner{margin:0 0 14px; background:var(--light-pink); color:var(--pink); font-size:.78rem; font-weight:700; text-align:center; padding:9px 12px; border-radius:12px;}
 
 .rules-link{display:block; width:100%; text-align:center; font-size:.76rem; color:var(--gray); text-decoration:underline; text-underline-offset:2px; margin-bottom:12px;}
 .rules-panel{background:var(--light-pink); border-radius:14px; padding:14px 16px; font-size:.78rem; color:var(--medium); line-height:1.8; margin-bottom:16px;}
@@ -125,7 +124,6 @@ main{max-width:600px; margin:0 auto; padding:18px 16px 30px;}
 </header>
 
 <main id="mainWrap">
-  <div class="promo-banner hidden" id="promoBanner"></div>
   <button class="rules-link" id="rulesToggle">查看預約須知與門市資訊</button>
   <div class="rules-panel hidden" id="rulesPanel"></div>
 
@@ -225,7 +223,6 @@ function init(){
     if(doc.exists){
       salonSettings = Object.assign(salonSettings, doc.data());
       document.getElementById('salonName').textContent = salonSettings.name || '線上預約';
-      renderPromo();
       renderRulesPanel();
     } else {
       document.getElementById('mainWrap').innerHTML = '<div class="empty-msg">找不到這家店的預約資料。</div>';
@@ -246,14 +243,7 @@ function init(){
   };
 }
 
-/* ---- 優惠與須知 ---- */
-function renderPromo(){
-  const banner = document.getElementById('promoBanner');
-  const text = (salonSettings.promoText||'').trim();
-  if(!text){ banner.classList.add('hidden'); return; }
-  banner.textContent = text;
-  banner.classList.remove('hidden');
-}
+/* ---- 預約須知 ---- */
 function renderRulesPanel(){
   const r = Object.assign({advanceDays:30, allowCancel:true, cancelHours:24, noShowLimit:3}, salonSettings.bookingRules||{});
   const st = Object.assign({address:'', phone:''}, salonSettings.storeInfo||{});
@@ -470,7 +460,6 @@ function submitBooking(){
   batch.commit().then(()=>{
     document.querySelectorAll('.card-section').forEach(s=>s.classList.add('hidden'));
     document.getElementById('stepsDots').classList.add('hidden');
-    document.getElementById('promoBanner').classList.add('hidden');
     document.getElementById('rulesToggle').classList.add('hidden');
     document.getElementById('rulesPanel').classList.add('hidden');
     document.getElementById('successMsg').textContent =
