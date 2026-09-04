@@ -102,36 +102,29 @@ section{margin-bottom:24px;}
 .mini-btn{background:var(--pink); color:#fff; font-weight:700; font-size:.78rem; padding:7px 12px; border-radius:20px; white-space:nowrap;}
 .empty-msg{text-align:center; color:var(--gray); font-size:.85rem; padding:22px 10px;}
 
-/* ---- 行事曆（週選單 + 分美容師欄）---- */
-.cal-legend{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;}
-.cal-legend .item{display:flex; align-items:center; gap:6px; font-size:.76rem; color:var(--medium);}
-.cal-legend .dot{width:9px; height:9px; border-radius:50%;}
-.cal-wrap{background:#fff; border:1px solid var(--line); border-radius:18px; overflow:hidden; box-shadow:var(--shadow);}
-.cal-weekbar{display:grid; grid-template-columns:repeat(7,1fr); border-bottom:1px solid var(--line);}
-.cal-wd{text-align:center; padding:10px 4px; border-right:1px solid var(--line); color:var(--medium); font-weight:700;}
-.cal-wd:last-child{border-right:none;}
-.cal-wd .dow{font-size:.62rem; color:var(--gray); display:block; font-weight:500;}
-.cal-wd .num{width:26px; height:26px; margin:4px auto 0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.95rem;}
-.cal-wd.active .num{background:var(--pink); color:#fff;}
-.cal-head-row{display:grid; grid-template-columns:52px repeat(var(--staffN,3),1fr); border-bottom:1px solid var(--line); background:var(--cream);}
-.cal-head-cell{padding:8px 8px; display:flex; align-items:center; gap:8px; border-left:1px solid var(--line); min-width:0;}
-.cal-head-cell:first-child{border-left:none;}
-.cal-head-cell .staff-dot{width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:.72rem; flex-shrink:0;}
-.cal-head-cell b{font-size:.8rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-.cal-head-cell span{font-size:.62rem; color:var(--gray);}
-.cal-scroll{overflow-x:auto;}
-.cal-body{display:grid; grid-template-columns:52px repeat(var(--staffN,3),1fr); position:relative; min-width:520px;}
-.cal-axis{position:relative; border-right:1px solid var(--line);}
-.cal-axis .hr{position:absolute; left:0; right:6px; text-align:right; font-size:.64rem; color:var(--gray); transform:translateY(-50%);}
-.cal-col{position:relative; border-left:1px solid var(--line); background-image:repeating-linear-gradient(180deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent var(--hourpx,60px));}
-.cal-offblock{position:absolute; left:0; right:0; background:repeating-linear-gradient(45deg, var(--cream), var(--cream) 6px, #fff 6px, #fff 12px);}
-.cal-nowline{position:absolute; left:0; right:0; height:0; border-top:2px solid var(--pink); z-index:3;}
-.cal-nowline::before{content:""; position:absolute; left:-4px; top:-4px; width:8px; height:8px; border-radius:50%; background:var(--pink);}
-.appt-block{position:absolute; left:3px; right:3px; border-radius:10px; padding:6px 8px; overflow:hidden; cursor:pointer; border-left:3px solid; box-shadow:0 3px 8px rgba(0,0,0,.1);}
-.appt-block .t{font-size:.66rem; font-weight:700;}
-.appt-block .n{font-size:.76rem; font-weight:700; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.appt-block .svc{font-size:.64rem; opacity:.85; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.cal-empty{font-size:.82rem; color:var(--gray); text-align:center; padding:30px 8px; grid-column:1/-1;}
+/* ---- 行事曆（簡單網格）---- */
+.day-strip{display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:14px;}
+.day-chip{min-width:52px; text-align:center; padding:8px 4px; border-radius:14px; background:#fff; border:1.5px solid var(--light-pink); font-weight:700; color:var(--medium); flex-shrink:0;}
+.day-chip .dow{font-size:.66rem; display:block; color:var(--gray); font-weight:500;}
+.day-chip .num{font-size:1.05rem; display:block; margin-top:2px;}
+.day-chip.active{background:var(--pink); color:#fff; border-color:var(--pink);}
+.day-chip.active .dow{color:#fce8e5;}
+.timeline-wrap{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); overflow-x:auto; padding:10px;}
+.timeline-grid{display:flex; min-width:100%;}
+.time-col{width:44px; flex-shrink:0; padding-top:38px;}
+.time-col .tl{font-size:.68rem; color:var(--gray); text-align:right; padding-right:6px; position:relative; top:-6px;}
+.staff-cols{display:flex; flex:1; gap:6px;}
+.staff-col{min-width:150px; flex:1;}
+.staff-head{display:flex; align-items:center; gap:8px; padding:6px 4px 10px;}
+.staff-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+.staff-head b{font-size:.85rem;}
+.staff-head .hrs{font-size:.66rem; color:var(--gray); display:block;}
+.staff-track{position:relative; border-left:1px solid var(--light-pink); border-radius:8px; background:repeating-linear-gradient(to bottom, transparent, transparent 59px, var(--light-pink) 59px, var(--light-pink) 60px);}
+.appt-block{position:absolute; left:2px; right:2px; border-radius:10px; padding:6px 8px; overflow:hidden; font-size:.72rem; color:#fff; cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,.1);}
+.appt-block b{display:block; font-size:.78rem; font-weight:700;}
+.appt-block .svc{opacity:.9; font-size:.68rem;}
+.appt-block.cancelled{opacity:.45; text-decoration:line-through;}
+.cal-empty{font-size:.82rem; color:var(--gray); text-align:center; padding:30px 8px;}
 
 /* ---- List ---- */
 .search-bar{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
@@ -328,12 +321,10 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
 
       <!-- 行事曆（分美容師） -->
       <div class="view" id="view-calendar">
-        <div class="topbar"><div><h1>行事曆</h1><div class="sub">依日期查看每位美容師的預約，狀態用顏色區分</div></div></div>
-        <div class="cal-legend" id="calLegend"></div>
-        <div class="cal-wrap">
-          <div class="cal-weekbar" id="calWeekbar"></div>
-          <div class="cal-head-row" id="calHeadRow"></div>
-          <div class="cal-scroll"><div class="cal-body" id="calBody"></div></div>
+        <div class="topbar"><div><h1>行事曆</h1><div class="sub">依日期查看每位美容師的預約</div></div></div>
+        <div class="day-strip" id="dayStrip"></div>
+        <div class="timeline-wrap">
+          <div class="timeline-grid" id="timelineGrid"></div>
         </div>
       </div>
 
@@ -423,15 +414,28 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
       <!-- 會員與行銷 -->
       <div class="view" id="view-loyalty">
         <div class="topbar"><h1>會員與行銷</h1></div>
+        <p style="font-size:.78rem; color:var(--gray); margin:-8px 0 16px; line-height:1.6;">會員制度、點數規則、活動、生日禮的內容都由你自己設定，這裡只是空白平台，題目、等級、優惠內容都要你自己填。</p>
         <div class="subtabs" id="loyaltyTabs"></div>
+
         <div class="subpanel active" id="loy-member">
           <div class="settings-panel">
             <div class="field-row2">
-              <div><div class="lbl">啟用會員制度</div><div class="hint">開啟後可在下方設定點數換算方式</div></div>
+              <div><div class="lbl">啟用會員制度</div><div class="hint">開啟後可在下方設定等級與點數規則</div></div>
               <div class="ctrl"><label class="switch"><input type="checkbox" id="loyEnabled"><span class="track"></span></label></div>
             </div>
           </div>
+          <div class="settings-panel">
+            <h3>會員等級</h3>
+            <p style="margin-bottom:10px;">等級名稱、升級條件、專屬福利都自己填</p>
+            <table class="data">
+              <thead><tr><th>等級</th><th>升級條件</th><th>專屬福利</th><th></th></tr></thead>
+              <tbody id="tierBody"></tbody>
+            </table>
+            <button class="btn-ghost" style="margin-top:10px;" onclick="addTier()">＋ 新增等級</button>
+            <button class="btn-main" onclick="saveTiers()">儲存等級</button>
+          </div>
         </div>
+
         <div class="subpanel" id="loy-points">
           <div class="settings-panel">
             <h3>如何獲得點數</h3>
@@ -440,6 +444,41 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
               <div class="ctrl">每消費 NT$<input class="num-input" type="number" id="loyPointBase" value="100"> 得 <input class="num-input" type="number" id="loyPointRate" value="1"> 點</div>
             </div>
             <button class="btn-main" onclick="saveLoyalty()">儲存設定</button>
+          </div>
+          <div class="settings-panel">
+            <h3>點數兌換方案</h3>
+            <p style="margin-bottom:10px;">兌換內容自己填，例如折抵金額、免費升級服務</p>
+            <table class="data">
+              <thead><tr><th>所需點數</th><th>兌換內容</th><th></th></tr></thead>
+              <tbody id="redeemBody"></tbody>
+            </table>
+            <button class="btn-ghost" style="margin-top:10px;" onclick="addRedeemPlan()">＋ 新增兌換方案</button>
+            <button class="btn-main" onclick="saveRedeemPlans()">儲存方案</button>
+          </div>
+        </div>
+
+        <div class="subpanel" id="loy-activity">
+          <div id="actList"></div>
+          <button class="btn-main" style="margin-top:8px;" id="newActBtn" onclick="toggleActForm()">＋ 建立新活動</button>
+          <div class="settings-panel" id="actForm" style="display:none; margin-top:14px;">
+            <div class="field"><label>活動名稱</label><input class="text-input" id="actName" placeholder="例如：週年慶優惠"></div>
+            <div class="field"><label>活動期間</label><input class="text-input" id="actPeriod" placeholder="例如：10/1–10/15"></div>
+            <div class="field"><label>活動內容</label><input class="text-input" id="actContent" placeholder="例如：指定方案 85 折"></div>
+            <div class="field"><label>適用對象</label><input class="text-input" id="actTarget" placeholder="例如：全體會員 / 僅新客"></div>
+            <div class="field"><label>優惠碼（選填）</label><input class="text-input" id="actCode" placeholder="例如：MOM8"></div>
+            <button class="btn-main" onclick="saveActivity()">建立活動</button>
+          </div>
+        </div>
+
+        <div class="subpanel" id="loy-birthday">
+          <div class="settings-panel">
+            <div class="field-row2">
+              <div><div class="lbl">提前發送天數</div><div class="hint">生日當天前幾天傳送祝福與禮物訊息</div></div>
+              <div class="ctrl"><input class="num-input" type="number" id="bdayDays" value="7"><span>天</span></div>
+            </div>
+            <div class="field" style="margin-top:10px;"><label>生日禮內容</label><textarea class="text-input" id="bdayContent" rows="2" placeholder="例如：生日當月享指定服務 8 折"></textarea></div>
+            <div class="field"><label>使用期限</label><input class="text-input" id="bdayExpiry" placeholder="例如：生日當月底前"></div>
+            <button class="btn-main" onclick="saveBirthday()">儲存設定</button>
           </div>
         </div>
       </div>
@@ -549,19 +588,16 @@ const db = firebase.firestore();
 
 const STATUSES = ['待確認','已確認','已完成','未到','已取消'];
 const COLOR_PALETTE = ['#C9938A','#7A9BAD','#9AAE9B','#B8A6C9','#D4A574','#8AA6C9'];
-const STATUS_COLORS = {
-  '待確認':{bg:'#E3EDF3', fg:'#7A9BAD'},
-  '已確認':{bg:'#F5E6E3', fg:'#C9938A'},
-  '已完成':{bg:'#E8F0E8', fg:'#5a7a5b'},
-  '未到':{bg:'#f1e2e2', fg:'#a35a5a'},
-  '已取消':{bg:'#ece9e4', fg:'#9B9A97'}
-};
 
 let currentUid = null;
 let salonSettings = { name:'', bizStart:9, bizEnd:20,
   introForm:[{q:'是否第一次來店？', type:'single', opts:['是','否']}],
   notifySettings:{onSuccess:true, onReminder:true, onComplete:true},
   loyalty:{enabled:false, pointBase:100, pointRate:1},
+  memberTiers:[],
+  redeemPlans:[],
+  activities:[],
+  birthdayGift:{daysBefore:7, content:'', expiry:''},
   bookingRules:{advanceDays:30, allowCancel:true, cancelHours:24, noShowLimit:3, dailyCap:0}
 };
 let activeCustPhone = null;
@@ -758,71 +794,51 @@ function renderReminderList(list){
 }
 
 /* ================== 行事曆（分美容師） ================== */
-function renderCalLegend(){
-  const wrap = document.getElementById('calLegend');
-  wrap.innerHTML='';
-  STATUSES.forEach(st=>{
-    const item = el('div','item');
-    item.innerHTML = `<span class="dot" style="background:${STATUS_COLORS[st].fg}"></span>${st}`;
-    wrap.appendChild(item);
-  });
-}
 function renderDayStrip(){
-  const wrap = document.getElementById('calWeekbar');
+  const wrap = document.getElementById('dayStrip');
   wrap.innerHTML='';
   const start = startOfWeek(new Date());
   const dayNames = ['一','二','三','四','五','六','日'];
   for(let i=0;i<7;i++){
     const d = addDays(start,i);
-    const chip = el('div','cal-wd'+(d.getTime()===selectedDate.getTime()?' active':''));
-    chip.innerHTML = `<span class="dow">${dayNames[i]}</span><span class="num">${d.getDate()}</span>`;
+    const chip = el('div','day-chip'+(d.getTime()===selectedDate.getTime()?' active':''));
+    chip.innerHTML = `<span class="dow">週${dayNames[i]}</span><span class="num">${d.getDate()}</span>`;
     chip.onclick = ()=>{ selectedDate = d; renderCalendar(); };
     wrap.appendChild(chip);
   }
 }
 function renderCalendar(){
-  renderCalLegend();
   renderDayStrip();
-  const headRow = document.getElementById('calHeadRow');
-  const body = document.getElementById('calBody');
-  headRow.innerHTML=''; body.innerHTML='';
+  const grid = document.getElementById('timelineGrid');
+  grid.innerHTML='';
   const startH = salonSettings.bizStart ?? 9, endH = salonSettings.bizEnd ?? 20;
-  const totalHours = Math.max(endH - startH, 1);
+  const totalHours = endH - startH;
   const rowH = 60;
-  document.documentElement.style.setProperty('--staffN', Math.max(staffList.length,1));
-  document.documentElement.style.setProperty('--hourpx', rowH+'px');
 
   if(staffList.length===0){
-    body.innerHTML = '<div class="cal-empty">還沒有員工，請先到「員工」頁新增美容師</div>';
+    grid.innerHTML = '<div class="cal-empty">還沒有員工，請先到「員工」頁新增美容師</div>';
     return;
   }
 
-  headRow.innerHTML = '<div class="cal-head-cell"></div>' + staffList.map(s=>
-    `<div class="cal-head-cell"><div class="staff-dot" style="background:${s.color||'#C9938A'}">${escapeHtml((s.name||'').slice(0,1))}</div><div><b>${escapeHtml(s.name)}</b><span>${s.workStart!=null?s.workStart+':00–'+s.workEnd+':00':''}</span></div></div>`
-  ).join('');
-
-  const totalH = totalHours*rowH;
-  let axis = `<div class="cal-axis" style="height:${totalH}px;">`;
+  const timeCol = el('div','time-col');
   for(let h=startH; h<=endH; h++){
-    axis += `<div class="hr" style="top:${(h-startH)*rowH}px;">${h}:00</div>`;
+    const lbl = el('div','tl', h+':00'); lbl.style.height = (h===endH?0:rowH)+'px';
+    timeCol.appendChild(lbl);
   }
-  axis += '</div>';
+  grid.appendChild(timeCol);
 
-  const dayStart = new Date(selectedDate); dayStart.setHours(0,0,0,0);
-  const dayEnd = addDays(dayStart,1);
-
-  const isToday = dayStart.getTime()===startOfDay(new Date()).getTime();
-
-  let cols = '';
+  const staffCols = el('div','staff-cols');
   staffList.forEach(staff=>{
-    let inner = '';
-    const wStart = staff.workStart!=null ? staff.workStart : startH;
-    const wEnd = staff.workEnd!=null ? staff.workEnd : endH;
-    const offTop = Math.max(wStart-startH,0)*rowH;
-    const offBottom = Math.max(endH-wEnd,0)*rowH;
-    if(offTop>0) inner += `<div class="cal-offblock" style="top:0; height:${offTop}px;"></div>`;
-    if(offBottom>0) inner += `<div class="cal-offblock" style="bottom:0; height:${offBottom}px;"></div>`;
+    const col = el('div','staff-col');
+    const head = el('div','staff-head');
+    head.innerHTML = `<span class="staff-dot" style="background:${staff.color||'#C9938A'}"></span><div><b>${escapeHtml(staff.name)}</b><span class="hrs">${staff.workStart!=null?staff.workStart+':00-'+staff.workEnd+':00':''}</span></div>`;
+    col.appendChild(head);
 
+    const track = el('div','staff-track');
+    track.style.height = (totalHours*rowH)+'px';
+
+    const dayStart = new Date(selectedDate); dayStart.setHours(0,0,0,0);
+    const dayEnd = addDays(dayStart,1);
     const dayAppts = appointments.filter(a=>{
       const d = new Date(a.datetime);
       return a.staffId===staff.id && d>=dayStart && d<dayEnd;
@@ -833,27 +849,18 @@ function renderCalendar(){
       const durMin = a.duration || 60;
       const top = (startMin/60)*rowH;
       const height = Math.max((durMin/60)*rowH - 3, 24);
-      const sc = STATUS_COLORS[a.status] || STATUS_COLORS['待確認'];
-      inner += `<div class="appt-block" data-id="${a.id}" style="top:${top}px; height:${height}px; background:${sc.bg}; color:${sc.fg}; border-left-color:${sc.fg};">
-        <div class="t">${fmtTime(d)}</div>
-        <div class="n">${escapeHtml(a.name)}</div>
-        <div class="svc">${escapeHtml(a.service)}</div>
-      </div>`;
+      const block = el('div','appt-block'+(a.status==='已取消'?' cancelled':''));
+      block.style.top = top+'px';
+      block.style.height = height+'px';
+      block.style.background = staff.color || '#C9938A';
+      block.innerHTML = `<b>${fmtTime(d)} ${escapeHtml(a.name)}</b><span class="svc">${escapeHtml(a.service)}</span>`;
+      block.onclick = ()=> openForm(a.id);
+      track.appendChild(block);
     });
-    if(isToday){
-      const now = new Date();
-      const nowMin = (now.getHours()-startH)*60 + now.getMinutes();
-      if(nowMin>=0 && nowMin<=totalHours*60){
-        inner += `<div class="cal-nowline" style="top:${(nowMin/60)*rowH}px;"></div>`;
-      }
-    }
-    cols += `<div class="cal-col" style="height:${totalH}px;">${inner}</div>`;
+    col.appendChild(track);
+    staffCols.appendChild(col);
   });
-
-  body.innerHTML = axis + cols;
-  body.querySelectorAll('.appt-block').forEach(elm=>{
-    elm.onclick = ()=> openForm(elm.dataset.id);
-  });
+  grid.appendChild(staffCols);
 }
 
 /* ================== 預約列表 ================== */
@@ -1260,7 +1267,7 @@ function renderLoyaltyTabs(){
   const wrap = document.getElementById('loyaltyTabs');
   if(!wrap) return;
   wrap.innerHTML='';
-  [['member','會員制度'],['points','點數規則']].forEach(([id,label])=>{
+  [['member','會員制度'],['points','點數規則'],['activity','活動管理'],['birthday','生日禮']].forEach(([id,label])=>{
     const b = el('button','subtab'+(id===activeLoyTab?' active':''), label);
     b.onclick = ()=>{ activeLoyTab = id; renderLoyaltyTabs(); };
     wrap.appendChild(b);
@@ -1275,6 +1282,10 @@ function renderLoyaltyFields(){
   const baseEl = document.getElementById('loyPointBase'); if(baseEl) baseEl.value = l.pointBase;
   const rateEl = document.getElementById('loyPointRate'); if(rateEl) rateEl.value = l.pointRate;
   renderLoyaltyTabs();
+  renderTiers();
+  renderRedeemPlans();
+  renderActivities();
+  renderBirthday();
 }
 function saveLoyalty(){
   const loyalty = {
@@ -1284,6 +1295,137 @@ function saveLoyalty(){
   };
   salonSettings.loyalty = loyalty;
   db.collection('salons').doc(currentUid).update({loyalty})
+    .then(()=>showToast('已儲存設定')).catch(err=>showToast('儲存失敗：'+err.message));
+}
+
+/* ---- 會員等級 ---- */
+function renderTiers(){
+  const wrap = document.getElementById('tierBody');
+  if(!wrap) return;
+  const tiers = salonSettings.memberTiers || [];
+  wrap.innerHTML='';
+  if(tiers.length===0){ wrap.innerHTML = '<tr><td colspan="4" style="color:var(--gray); padding:14px 8px;">還沒有設定等級，按下方「新增等級」開始</td></tr>'; return; }
+  tiers.forEach((t,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" value="${escapeHtml(t.name||'')}" data-i="${i}" data-f="name"></td>
+      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" value="${escapeHtml(t.cond||'')}" data-i="${i}" data-f="cond"></td>
+      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" value="${escapeHtml(t.perk||'')}" data-i="${i}" data-f="perk"></td>
+      <td><button class="mini-btn" style="background:#fbe4e1; color:#b95c50;" data-del="${i}">刪除</button></td>`;
+    wrap.appendChild(tr);
+  });
+  wrap.querySelectorAll('input[data-f]').forEach(inp=>{
+    inp.oninput = e=>{ salonSettings.memberTiers[+e.target.dataset.i][e.target.dataset.f] = e.target.value; };
+  });
+  wrap.querySelectorAll('button[data-del]').forEach(btn=>{
+    btn.onclick = ()=>{ salonSettings.memberTiers.splice(+btn.dataset.del,1); renderTiers(); };
+  });
+}
+function addTier(){
+  salonSettings.memberTiers = salonSettings.memberTiers || [];
+  salonSettings.memberTiers.push({name:'新等級', cond:'', perk:''});
+  renderTiers();
+}
+function saveTiers(){
+  db.collection('salons').doc(currentUid).update({memberTiers: salonSettings.memberTiers||[]})
+    .then(()=>showToast('已儲存')).catch(err=>showToast('儲存失敗：'+err.message));
+}
+
+/* ---- 點數兌換方案 ---- */
+function renderRedeemPlans(){
+  const wrap = document.getElementById('redeemBody');
+  if(!wrap) return;
+  const plans = salonSettings.redeemPlans || [];
+  wrap.innerHTML='';
+  if(plans.length===0){ wrap.innerHTML = '<tr><td colspan="3" style="color:var(--gray); padding:14px 8px;">還沒有設定兌換方案</td></tr>'; return; }
+  plans.forEach((p,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px; width:90px;" value="${escapeHtml(p.pt||'')}" data-i="${i}" data-f="pt"></td>
+      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" value="${escapeHtml(p.item||'')}" data-i="${i}" data-f="item"></td>
+      <td><button class="mini-btn" style="background:#fbe4e1; color:#b95c50;" data-del="${i}">刪除</button></td>`;
+    wrap.appendChild(tr);
+  });
+  wrap.querySelectorAll('input[data-f]').forEach(inp=>{
+    inp.oninput = e=>{ salonSettings.redeemPlans[+e.target.dataset.i][e.target.dataset.f] = e.target.value; };
+  });
+  wrap.querySelectorAll('button[data-del]').forEach(btn=>{
+    btn.onclick = ()=>{ salonSettings.redeemPlans.splice(+btn.dataset.del,1); renderRedeemPlans(); };
+  });
+}
+function addRedeemPlan(){
+  salonSettings.redeemPlans = salonSettings.redeemPlans || [];
+  salonSettings.redeemPlans.push({pt:'100 點', item:''});
+  renderRedeemPlans();
+}
+function saveRedeemPlans(){
+  db.collection('salons').doc(currentUid).update({redeemPlans: salonSettings.redeemPlans||[]})
+    .then(()=>showToast('已儲存')).catch(err=>showToast('儲存失敗：'+err.message));
+}
+
+/* ---- 活動管理 ---- */
+function renderActivities(){
+  const wrap = document.getElementById('actList');
+  if(!wrap) return;
+  const acts = salonSettings.activities || [];
+  wrap.innerHTML='';
+  if(acts.length===0){ wrap.appendChild(el('div','empty-msg','還沒有建立任何活動')); }
+  acts.forEach((a,i)=>{
+    const card = el('div','settings-panel');
+    card.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+        <div><h3 style="margin-bottom:2px;">${escapeHtml(a.name)}</h3><p style="margin:0 0 4px;">${escapeHtml(a.period||'')}</p>
+        <div style="font-size:.82rem; color:var(--medium);">內容：${escapeHtml(a.content||'')}　適用對象：${escapeHtml(a.target||'')}${a.code?'　優惠碼：'+escapeHtml(a.code):''}</div></div>
+        <button class="mini-btn" style="background:#fbe4e1; color:#b95c50;" data-del="${i}">刪除</button>
+      </div>`;
+    wrap.appendChild(card);
+  });
+  wrap.querySelectorAll('button[data-del]').forEach(btn=>{
+    btn.onclick = ()=>{
+      salonSettings.activities.splice(+btn.dataset.del,1);
+      db.collection('salons').doc(currentUid).update({activities: salonSettings.activities})
+        .then(()=>{ renderActivities(); showToast('已刪除'); });
+    };
+  });
+}
+function toggleActForm(){
+  const f = document.getElementById('actForm');
+  f.style.display = f.style.display==='none' ? 'block' : 'none';
+}
+function saveActivity(){
+  const name = document.getElementById('actName').value.trim();
+  if(!name){ showToast('請輸入活動名稱'); return; }
+  const act = {
+    name,
+    period: document.getElementById('actPeriod').value.trim(),
+    content: document.getElementById('actContent').value.trim(),
+    target: document.getElementById('actTarget').value.trim(),
+    code: document.getElementById('actCode').value.trim()
+  };
+  salonSettings.activities = salonSettings.activities || [];
+  salonSettings.activities.push(act);
+  db.collection('salons').doc(currentUid).update({activities: salonSettings.activities}).then(()=>{
+    ['actName','actPeriod','actContent','actTarget','actCode'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('actForm').style.display='none';
+    renderActivities();
+    showToast('已建立活動');
+  }).catch(err=>showToast('儲存失敗：'+err.message));
+}
+
+/* ---- 生日禮 ---- */
+function renderBirthday(){
+  const b = Object.assign({daysBefore:7, content:'', expiry:''}, salonSettings.birthdayGift||{});
+  const d = document.getElementById('bdayDays'); if(d) d.value = b.daysBefore;
+  const c = document.getElementById('bdayContent'); if(c) c.value = b.content;
+  const e = document.getElementById('bdayExpiry'); if(e) e.value = b.expiry;
+}
+function saveBirthday(){
+  const birthdayGift = {
+    daysBefore: Number(document.getElementById('bdayDays').value)||7,
+    content: document.getElementById('bdayContent').value.trim(),
+    expiry: document.getElementById('bdayExpiry').value.trim()
+  };
+  salonSettings.birthdayGift = birthdayGift;
+  db.collection('salons').doc(currentUid).update({birthdayGift})
     .then(()=>showToast('已儲存設定')).catch(err=>showToast('儲存失敗：'+err.message));
 }
 </script>
