@@ -293,6 +293,7 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
         <li><button class="nav-item" data-view="list" onclick="showView('list')">📋 預約列表</button></li>
         <li><button class="nav-item" data-view="crm" onclick="showView('crm')">🗂️ 客戶管理</button></li>
         <li><button class="nav-item" data-view="staff" onclick="showView('staff')">💇 員工</button></li>
+        <li><button class="nav-item" data-view="services" onclick="showView('services')">💅 服務項目</button></li>
         <li><button class="nav-item" data-view="form" onclick="showView('form')">📝 表單設定</button></li>
         <li><button class="nav-item" data-view="notify" onclick="showView('notify')">🔔 自動通知</button></li>
         <li><button class="nav-item" data-view="rules" onclick="showView('rules')">📏 預約規則</button></li>
@@ -363,6 +364,17 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
         <div class="topbar"><h1>員工</h1></div>
         <div class="section-title">美容師 / 美甲師 <span class="hint">會顯示為行事曆分欄</span></div>
         <div id="staffContainer"></div>
+      </div>
+
+      <!-- 服務項目 -->
+      <div class="view" id="view-services">
+        <div class="topbar"><h1>服務項目</h1></div>
+        <p style="font-size:.78rem; color:var(--gray); margin:-8px 0 16px; line-height:1.6;">客人在預約頁選擇的服務清單，價格與時長自己填，客人送出預約時會即時顯示。</p>
+        <div class="settings-panel">
+          <div id="serviceList"></div>
+          <button class="btn-ghost" style="width:100%; margin-top:8px;" onclick="addService()">＋ 新增服務</button>
+          <button class="btn-main" onclick="saveServices()">儲存服務項目</button>
+        </div>
       </div>
 
       <!-- 預約前置表單設定 -->
@@ -496,12 +508,19 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
         </div>
         <div class="settings-panel">
           <h3>營業時間</h3>
-          <p>用於行事曆顯示的時間範圍。</p>
+          <p>用於行事曆顯示的時間範圍，也會顯示在客人的預約頁。</p>
           <div class="field-row">
             <div class="field"><label>開始時間</label><select id="bizStart"></select></div>
             <div class="field"><label>結束時間</label><select id="bizEnd"></select></div>
           </div>
           <button class="btn-main" onclick="saveBizHours()">儲存設定</button>
+        </div>
+        <div class="settings-panel">
+          <h3>門市資訊</h3>
+          <p>會顯示在客人預約頁的「預約須知與門市資訊」，留空則不顯示該欄。</p>
+          <div class="field"><label>地址</label><input class="text-input" id="storeAddr" placeholder="例如：台北市大安區安和路一段 12 號 2 樓"></div>
+          <div class="field"><label>電話</label><input class="text-input" id="storePhone" placeholder="例如：02-2755-1234"></div>
+          <button class="btn-main" onclick="saveStoreInfo()">儲存門市資訊</button>
         </div>
         <div class="settings-panel">
           <h3>關於 LINE 官方帳號自動提醒</h3>
@@ -598,7 +617,9 @@ let salonSettings = { name:'', bizStart:9, bizEnd:20,
   redeemPlans:[],
   activities:[],
   birthdayGift:{daysBefore:7, content:'', expiry:''},
-  bookingRules:{advanceDays:30, allowCancel:true, cancelHours:24, noShowLimit:3, dailyCap:0}
+  bookingRules:{advanceDays:30, allowCancel:true, cancelHours:24, noShowLimit:3, dailyCap:0},
+  services:[],
+  storeInfo:{address:'', phone:''}
 };
 let activeCustPhone = null;
 let activeLoyTab = 'member';
@@ -690,6 +711,8 @@ function loadSalonData(){
       renderNotifyList();
       renderRulesFields();
       renderLoyaltyFields();
+      renderServices();
+      renderStoreInfo();
     } else {
       // 保險機制：帳號存在但店家資料遺失（例如註冊過程中斷），自動補建立一份
       return salonRef.set({
@@ -1100,6 +1123,58 @@ function saveBizHours(){
   db.collection('salons').doc(currentUid).update({bizStart:s, bizEnd:e})
     .then(()=>{ showToast('已儲存設定'); renderCalendar(); });
 }
+function renderStoreInfo(){
+  const s = Object.assign({address:'', phone:''}, salonSettings.storeInfo||{});
+  const a = document.getElementById('storeAddr'); if(a) a.value = s.address;
+  const p = document.getElementById('storePhone'); if(p) p.value = s.phone;
+}
+function saveStoreInfo(){
+  const storeInfo = {
+    address: document.getElementById('storeAddr').value.trim(),
+    phone: document.getElementById('storePhone').value.trim()
+  };
+  salonSettings.storeInfo = storeInfo;
+  db.collection('salons').doc(currentUid).update({storeInfo})
+    .then(()=>showToast('已儲存門市資訊')).catch(err=>showToast('儲存失敗：'+err.message));
+}
+
+/* ================== 服務項目 ================== */
+function renderServices(){
+  const wrap = document.getElementById('serviceList');
+  if(!wrap) return;
+  const services = salonSettings.services || [];
+  wrap.innerHTML='';
+  if(services.length===0){ wrap.appendChild(el('div','empty-msg','還沒有設定服務項目，按下方「新增服務」開始')); }
+  services.forEach((s,i)=>{
+    const row = el('div','qrow');
+    row.innerHTML = `<div class="qbody" style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:8px;">
+        <input class="text-input" style="border:1.5px solid var(--light-pink); border-radius:10px; padding:8px 10px;" value="${escapeHtml(s.name||'')}" placeholder="服務名稱" data-i="${i}" data-f="name">
+        <input class="text-input" style="border:1.5px solid var(--light-pink); border-radius:10px; padding:8px 10px;" type="number" value="${s.duration||''}" placeholder="分鐘" data-i="${i}" data-f="duration">
+        <input class="text-input" style="border:1.5px solid var(--light-pink); border-radius:10px; padding:8px 10px;" type="number" value="${s.price||''}" placeholder="價格" data-i="${i}" data-f="price">
+      </div>`;
+    const del = el('button','del','移除');
+    del.onclick = ()=>{ salonSettings.services.splice(i,1); renderServices(); };
+    row.appendChild(del);
+    wrap.appendChild(row);
+  });
+  wrap.querySelectorAll('input[data-f]').forEach(inp=>{
+    inp.oninput = e=>{
+      const f = e.target.dataset.f;
+      const v = f==='name' ? e.target.value : Number(e.target.value)||0;
+      salonSettings.services[+e.target.dataset.i][f] = v;
+    };
+  });
+}
+function addService(){
+  salonSettings.services = salonSettings.services || [];
+  salonSettings.services.push({name:'', duration:60, price:0});
+  renderServices();
+}
+function saveServices(){
+  db.collection('salons').doc(currentUid).update({services: salonSettings.services||[]})
+    .then(()=>showToast('已儲存服務項目')).catch(err=>showToast('儲存失敗：'+err.message));
+}
+
 function copyBookingLink(){
   const text = document.getElementById('bookingLink').textContent;
   navigator.clipboard?.writeText(text).then(()=>showToast('已複製預約連結'))
