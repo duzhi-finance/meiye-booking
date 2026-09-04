@@ -297,7 +297,7 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
         <li><button class="nav-item" data-view="form" onclick="showView('form')">📝 表單設定</button></li>
         <li><button class="nav-item" data-view="notify" onclick="showView('notify')">🔔 自動通知</button></li>
         <li><button class="nav-item" data-view="rules" onclick="showView('rules')">📏 預約規則</button></li>
-        <li><button class="nav-item" data-view="loyalty" onclick="showView('loyalty')">🎁 會員與行銷</button></li>
+        <li><button class="nav-item" data-view="loyalty" onclick="showView('loyalty')">📢 優惠公告</button></li>
         <li><button class="nav-item" data-view="settings" onclick="showView('settings')">⚙️ 設定</button></li>
       </ul>
     </nav>
@@ -317,14 +317,6 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
         <section>
           <div class="section-title">即將提醒</div>
           <div id="reminderList"></div>
-        </section>
-        <section>
-          <div class="section-title">🎂 今日/近期壽星</div>
-          <div id="birthdayList"></div>
-        </section>
-        <section>
-          <div class="section-title">🎉 升級提醒</div>
-          <div id="upgradeList"></div>
         </section>
       </div>
 
@@ -433,73 +425,11 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
 
       <!-- 會員與行銷 -->
       <div class="view" id="view-loyalty">
-        <div class="topbar"><h1>會員與行銷</h1></div>
-        <p style="font-size:.78rem; color:var(--gray); margin:-8px 0 16px; line-height:1.6;">會員制度、點數規則、活動、生日禮的內容都由你自己設定，這裡只是空白平台，題目、等級、優惠內容都要你自己填。</p>
-        <div class="subtabs" id="loyaltyTabs"></div>
-
-        <div class="subpanel active" id="loy-member">
-          <div class="settings-panel">
-            <div class="field-row2">
-              <div><div class="lbl">啟用會員制度</div><div class="hint">開啟後可在下方設定等級與點數規則</div></div>
-              <div class="ctrl"><label class="switch"><input type="checkbox" id="loyEnabled"><span class="track"></span></label></div>
-            </div>
-          </div>
-          <div class="settings-panel">
-            <h3>會員等級</h3>
-            <p style="margin-bottom:10px;">填消費滿多少錢升級，系統會自動判斷客人目前等級與升級進度</p>
-            <table class="data">
-              <thead><tr><th>等級</th><th>消費滿（NT$）</th><th>專屬福利</th><th></th></tr></thead>
-              <tbody id="tierBody"></tbody>
-            </table>
-            <button class="btn-ghost" style="margin-top:10px;" onclick="addTier()">＋ 新增等級</button>
-            <button class="btn-main" onclick="saveTiers()">儲存等級</button>
-          </div>
-        </div>
-
-        <div class="subpanel" id="loy-points">
-          <div class="settings-panel">
-            <h3>如何獲得點數</h3>
-            <div class="field-row2">
-              <div class="lbl">消費金額換算</div>
-              <div class="ctrl">每消費 NT$<input class="num-input" type="number" id="loyPointBase" value="100"> 得 <input class="num-input" type="number" id="loyPointRate" value="1"> 點</div>
-            </div>
-            <button class="btn-main" onclick="saveLoyalty()">儲存設定</button>
-          </div>
-          <div class="settings-panel">
-            <h3>點數兌換方案</h3>
-            <p style="margin-bottom:10px;">兌換內容自己填，例如折抵金額、免費升級服務</p>
-            <table class="data">
-              <thead><tr><th>所需點數</th><th>兌換內容</th><th></th></tr></thead>
-              <tbody id="redeemBody"></tbody>
-            </table>
-            <button class="btn-ghost" style="margin-top:10px;" onclick="addRedeemPlan()">＋ 新增兌換方案</button>
-            <button class="btn-main" onclick="saveRedeemPlans()">儲存方案</button>
-          </div>
-        </div>
-
-        <div class="subpanel" id="loy-activity">
-          <div id="actList"></div>
-          <button class="btn-main" style="margin-top:8px;" id="newActBtn" onclick="toggleActForm()">＋ 建立新活動</button>
-          <div class="settings-panel" id="actForm" style="display:none; margin-top:14px;">
-            <div class="field"><label>活動名稱</label><input class="text-input" id="actName" placeholder="例如：週年慶優惠"></div>
-            <div class="field"><label>活動期間</label><input class="text-input" id="actPeriod" placeholder="例如：10/1–10/15"></div>
-            <div class="field"><label>活動內容</label><input class="text-input" id="actContent" placeholder="例如：指定方案 85 折"></div>
-            <div class="field"><label>適用對象</label><input class="text-input" id="actTarget" placeholder="例如：全體會員 / 僅新客"></div>
-            <div class="field"><label>優惠碼（選填）</label><input class="text-input" id="actCode" placeholder="例如：MOM8"></div>
-            <button class="btn-main" onclick="saveActivity()">建立活動</button>
-          </div>
-        </div>
-
-        <div class="subpanel" id="loy-birthday">
-          <div class="settings-panel">
-            <div class="field-row2">
-              <div><div class="lbl">提前發送天數</div><div class="hint">生日當天前幾天傳送祝福與禮物訊息</div></div>
-              <div class="ctrl"><input class="num-input" type="number" id="bdayDays" value="7"><span>天</span></div>
-            </div>
-            <div class="field" style="margin-top:10px;"><label>生日禮內容</label><textarea class="text-input" id="bdayContent" rows="2" placeholder="例如：生日當月享指定服務 8 折"></textarea></div>
-            <div class="field"><label>使用期限</label><input class="text-input" id="bdayExpiry" placeholder="例如：生日當月底前"></div>
-            <button class="btn-main" onclick="saveBirthday()">儲存設定</button>
-          </div>
+        <div class="topbar"><h1>優惠公告</h1></div>
+        <p style="font-size:.78rem; color:var(--gray); margin:-8px 0 16px; line-height:1.6;">自己打字設定目前的優惠內容（例如新客折扣、生日禮、活動訊息），客人在預約頁會看到這段文字。系統不會判斷誰符合資格，也不會自動發送任何通知，單純是公告欄。</p>
+        <div class="settings-panel">
+          <div class="field"><label>優惠公告內容</label><textarea class="text-input" id="promoText" rows="5" placeholder="例如：新客首次到店 9 折｜生日當月享指定服務 8 折，使用期限至當月底"></textarea></div>
+          <button class="btn-main" onclick="savePromo()">儲存公告</button>
         </div>
       </div>
 
@@ -620,23 +550,17 @@ let currentUid = null;
 let salonSettings = { name:'', bizStart:9, bizEnd:20,
   introForm:[{q:'是否第一次來店？', type:'single', opts:['是','否']}],
   notifySettings:{onSuccess:true, onReminder:true, onComplete:true},
-  loyalty:{enabled:false, pointBase:100, pointRate:1},
-  memberTiers:[],
-  redeemPlans:[],
-  activities:[],
-  birthdayGift:{daysBefore:7, content:'', expiry:''},
+  promoText: '',
   bookingRules:{advanceDays:30, allowCancel:true, cancelHours:24, noShowLimit:3, dailyCap:0},
   services:[],
   storeInfo:{address:'', phone:''}
 };
 let activeCustPhone = null;
-let activeLoyTab = 'member';
 let staffList = [];
 let appointments = [];
 let currentStatusFilter = 'all';
 let selectedDate = startOfDay(new Date());
-let unsubStaff = null, unsubAppts = null, unsubCustomers = null;
-let customerMeta = {};
+let unsubStaff = null, unsubAppts = null;
 let isRegisterMode = false;
 let formStatus = '待確認';
 let selectedColor = COLOR_PALETTE[0];
@@ -692,7 +616,6 @@ function translateAuthError(err){
 function handleLogout(){
   if(unsubStaff) unsubStaff();
   if(unsubAppts) unsubAppts();
-  if(unsubCustomers) unsubCustomers();
   auth.signOut();
 }
 
@@ -715,15 +638,12 @@ function loadSalonData(){
   salonRef.get().then(doc => {
     if(doc.exists){
       salonSettings = Object.assign(salonSettings, doc.data());
-      (salonSettings.memberTiers||[]).forEach(t=>{
-        if(t.threshold==null){ const m = String(t.cond||'').match(/[\d,]+/); t.threshold = m ? Number(m[0].replace(/,/g,'')) : 0; }
-      });
       document.getElementById('salonNameDisplay').textContent = salonSettings.name || '我的店';
       renderSettings();
       renderFormQuestions();
       renderNotifyList();
       renderRulesFields();
-      renderLoyaltyFields();
+      renderPromo();
       renderServices();
       renderStoreInfo();
     } else {
@@ -749,13 +669,6 @@ function loadSalonData(){
   unsubAppts = db.collection('salons').doc(currentUid).collection('appointments')
     .onSnapshot(snap => {
       appointments = snap.docs.map(d => Object.assign({id:d.id}, d.data()));
-      renderAll();
-    });
-
-  unsubCustomers = db.collection('salons').doc(currentUid).collection('customers')
-    .onSnapshot(snap => {
-      customerMeta = {};
-      snap.docs.forEach(d => { customerMeta[d.id] = d.data(); });
       renderAll();
     });
 
@@ -809,73 +722,6 @@ function renderDashboard(){
   const rem = upcomingForReminder();
   document.getElementById('statRemind').textContent = rem.length;
   renderReminderList(rem);
-  renderBirthdayList();
-  renderUpgradeList();
-}
-function daysUntilBirthday(birthday, now){
-  if(!birthday) return null;
-  const b = new Date(birthday);
-  if(isNaN(b)) return null;
-  let next = new Date(now.getFullYear(), b.getMonth(), b.getDate());
-  next.setHours(0,0,0,0);
-  const today = startOfDay(now);
-  if(next < today) next = new Date(now.getFullYear()+1, b.getMonth(), b.getDate());
-  return Math.round((next-today)/86400000);
-}
-function renderBirthdayList(){
-  const wrap = document.getElementById('birthdayList');
-  if(!wrap) return;
-  const daysBefore = (salonSettings.birthdayGift && salonSettings.birthdayGift.daysBefore) || 7;
-  const now = new Date();
-  const list = buildCustomerList()
-    .map(c=>({ c, meta: customerMeta[c.phone]||{}, days: daysUntilBirthday((customerMeta[c.phone]||{}).birthday, now) }))
-    .filter(x=> x.days!=null && x.days<=daysBefore)
-    .sort((a,b)=> a.days-b.days);
-  wrap.innerHTML='';
-  if(list.length===0){ wrap.appendChild(el('div','empty-msg', `${daysBefore} 天內沒有壽星`)); return; }
-  list.forEach(({c, days})=>{
-    const card = el('div','reminder-card');
-    const when = days===0 ? '今天生日🎉' : `${days} 天後生日`;
-    card.innerHTML = `<div class="info"><b>${escapeHtml(c.name)}</b><div class="meta">${escapeHtml(c.phone)}・${when}</div></div>`;
-    const btn = el('button','mini-btn','複製生日文案');
-    btn.onclick = ()=>{
-      const g = salonSettings.birthdayGift||{};
-      const msg = `${c.name}您好！${g.content||'生日快樂，祝您天天開心！'}${g.expiry?'（使用期限：'+g.expiry+'）':''}`;
-      openTextModal(msg);
-    };
-    card.appendChild(btn);
-    wrap.appendChild(card);
-  });
-}
-function renderUpgradeList(){
-  const wrap = document.getElementById('upgradeList');
-  if(!wrap) return;
-  const list = buildCustomerList().map(c=>{
-    const meta = customerMeta[c.phone]||{};
-    const { current, idx } = tierFor(c.spend);
-    return { c, meta, current, idx };
-  }).filter(x=> x.current && x.idx > (x.meta.lastTierIndex ?? -1));
-  wrap.innerHTML='';
-  if(list.length===0){ wrap.appendChild(el('div','empty-msg','目前沒有客人達到新的升級門檻')); return; }
-  list.forEach(({c, current, idx})=>{
-    const card = el('div','reminder-card');
-    card.innerHTML = `<div class="info"><b>${escapeHtml(c.name)}</b><div class="meta">${escapeHtml(c.phone)}・累積消費 ${fmtMoney(c.spend)}・可升級「${escapeHtml(current.name)}」</div></div>`;
-    const wrapBtns = el('div');
-    wrapBtns.style.display='flex'; wrapBtns.style.gap='6px';
-    const btn = el('button','mini-btn','複製升級文案');
-    btn.onclick = ()=>{
-      const msg = `${c.name}您好！恭喜您升級為「${current.name}」會員${current.perk?'，專屬福利：'+current.perk:''}，感謝您的長期支持 🌸`;
-      openTextModal(msg);
-    };
-    const doneBtn = el('button','mini-btn','標記已通知'); doneBtn.style.background='var(--light-sage)'; doneBtn.style.color='#5a7a5b';
-    doneBtn.onclick = ()=>{
-      db.collection('salons').doc(currentUid).collection('customers').doc(c.phone)
-        .set({lastTierIndex: idx}, {merge:true}).then(()=>showToast('已標記'));
-    };
-    wrapBtns.appendChild(btn); wrapBtns.appendChild(doneBtn);
-    card.appendChild(wrapBtns);
-    wrap.appendChild(card);
-  });
 }
 function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
 function countInRange(s,e){ return appointments.filter(a=>{ const d=new Date(a.datetime); return d>=s && d<e && a.status!=='已取消'; }).length; }
@@ -1314,27 +1160,11 @@ function renderCustDetail(customers){
   if(!wrap) return;
   const c = customers.find(x=>x.phone===activeCustPhone);
   if(!c){ wrap.innerHTML = '<div class="empty-msg">選一位客戶查看詳細資料</div>'; return; }
-  const meta = customerMeta[c.phone]||{};
-  const { current, next } = tierFor(c.spend);
-  const points = computePoints(c.spend, c.phone);
   wrap.innerHTML = `
     <div class="settings-panel">
       <div class="cust-header">
         <div class="cust-avatar">${escapeHtml((c.name||'?').slice(0,1))}</div>
         <div><h2>${escapeHtml(c.name||'（未命名）')}</h2><div class="hrs" style="color:var(--gray); font-size:.8rem;">${escapeHtml(c.phone)}</div></div>
-      </div>
-      <div class="field" style="margin-top:12px; margin-bottom:0;"><label>生日</label><input type="date" class="text-input" id="custBday" value="${meta.birthday||''}"></div>
-    </div>
-    <div class="settings-panel">
-      <h3>會員等級與點數</h3>
-      <div class="stat-grid">
-        <div class="stat-card pink"><div class="label">目前等級</div><div class="value" style="font-size:1.1rem;">${current?escapeHtml(current.name):'一般客戶'}</div></div>
-        <div class="stat-card blue"><div class="label">${next?'距下一等級':'已是最高等級'}</div><div class="value" style="font-size:1rem;">${next?fmtMoney(Math.max((next.threshold||0)-c.spend,0)):'—'}</div></div>
-        <div class="stat-card sage"><div class="label">點數餘額</div><div class="value" style="font-size:1.2rem;">${points}</div></div>
-      </div>
-      <div class="field-row2" style="margin-top:10px;">
-        <div class="lbl" style="font-size:.82rem;">兌換點數</div>
-        <div class="ctrl"><input class="num-input" type="number" id="redeemAmt" placeholder="0"><button class="mini-btn" id="redeemBtn">兌換</button></div>
       </div>
     </div>
     <div class="settings-panel">
@@ -1353,26 +1183,6 @@ function renderCustDetail(customers){
         return `<div class="reminder-card"><div class="info"><b>${escapeHtml(h.service)}</b><div class="meta">${fmtDate(d)} ${fmtTime(d)}・${fmtMoney(h.amount)}</div></div><span class="badge ${h.status}">${h.status}</span></div>`;
       }).join('') || '<div class="empty-msg">沒有紀錄</div>'}
     </div>`;
-  document.getElementById('custBday').onchange = e=>{
-    db.collection('salons').doc(currentUid).collection('customers').doc(c.phone)
-      .set({birthday: e.target.value}, {merge:true}).then(()=>showToast('已儲存生日'));
-  };
-  document.getElementById('redeemBtn').onclick = ()=>{
-    const amt = Number(document.getElementById('redeemAmt').value)||0;
-    if(amt<=0){ showToast('請輸入要兌換的點數'); return; }
-    if(amt>points){ showToast('點數不足'); return; }
-    const newRedeemed = (meta.pointsRedeemed||0) + amt;
-    db.collection('salons').doc(currentUid).collection('customers').doc(c.phone)
-      .set({pointsRedeemed: newRedeemed}, {merge:true}).then(()=>showToast('已兌換 '+amt+' 點'));
-  };
-}
-function computePoints(spend, phone){
-  const l = salonSettings.loyalty || {};
-  const base = l.pointBase || 0;
-  const rate = l.pointRate || 0;
-  const earned = base>0 ? Math.floor(spend/base)*rate : 0;
-  const redeemed = (customerMeta[phone]||{}).pointsRedeemed || 0;
-  return Math.max(earned - redeemed, 0);
 }
 document.getElementById('custSearch')?.addEventListener('input', renderCRM);
 
@@ -1463,185 +1273,16 @@ function saveBookingRules(){
     .then(()=>showToast('已儲存設定')).catch(err=>showToast('儲存失敗：'+err.message));
 }
 
-/* ================== 會員與行銷 ================== */
-function renderLoyaltyTabs(){
-  const wrap = document.getElementById('loyaltyTabs');
-  if(!wrap) return;
-  wrap.innerHTML='';
-  [['member','會員制度'],['points','點數規則'],['activity','活動管理'],['birthday','生日禮']].forEach(([id,label])=>{
-    const b = el('button','subtab'+(id===activeLoyTab?' active':''), label);
-    b.onclick = ()=>{ activeLoyTab = id; renderLoyaltyTabs(); };
-    wrap.appendChild(b);
-  });
-  document.querySelectorAll('.subpanel').forEach(p=>p.classList.remove('active'));
-  const active = document.getElementById('loy-'+activeLoyTab);
-  if(active) active.classList.add('active');
+/* ================== 優惠公告 ================== */
+function renderPromo(){
+  const t = document.getElementById('promoText');
+  if(t) t.value = salonSettings.promoText || '';
 }
-function renderLoyaltyFields(){
-  const l = Object.assign({enabled:false, pointBase:100, pointRate:1}, salonSettings.loyalty||{});
-  const enEl = document.getElementById('loyEnabled'); if(enEl) enEl.checked = l.enabled;
-  const baseEl = document.getElementById('loyPointBase'); if(baseEl) baseEl.value = l.pointBase;
-  const rateEl = document.getElementById('loyPointRate'); if(rateEl) rateEl.value = l.pointRate;
-  renderLoyaltyTabs();
-  renderTiers();
-  renderRedeemPlans();
-  renderActivities();
-  renderBirthday();
-}
-function saveLoyalty(){
-  const loyalty = {
-    enabled: document.getElementById('loyEnabled').checked,
-    pointBase: Number(document.getElementById('loyPointBase').value)||100,
-    pointRate: Number(document.getElementById('loyPointRate').value)||1
-  };
-  salonSettings.loyalty = loyalty;
-  db.collection('salons').doc(currentUid).update({loyalty})
-    .then(()=>showToast('已儲存設定')).catch(err=>showToast('儲存失敗：'+err.message));
-}
-
-/* ---- 會員等級 ---- */
-function renderTiers(){
-  const wrap = document.getElementById('tierBody');
-  if(!wrap) return;
-  const tiers = salonSettings.memberTiers || [];
-  wrap.innerHTML='';
-  if(tiers.length===0){ wrap.innerHTML = '<tr><td colspan="4" style="color:var(--gray); padding:14px 8px;">還沒有設定等級，按下方「新增等級」開始</td></tr>'; return; }
-  tiers.forEach((t,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" value="${escapeHtml(t.name||'')}" data-i="${i}" data-f="name"></td>
-      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" type="number" min="0" value="${t.threshold||0}" data-i="${i}" data-f="threshold"></td>
-      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" value="${escapeHtml(t.perk||'')}" data-i="${i}" data-f="perk"></td>
-      <td><button class="mini-btn" style="background:#fbe4e1; color:#b95c50;" data-del="${i}">刪除</button></td>`;
-    wrap.appendChild(tr);
-  });
-  wrap.querySelectorAll('input[data-f]').forEach(inp=>{
-    inp.oninput = e=>{
-      const f = e.target.dataset.f;
-      salonSettings.memberTiers[+e.target.dataset.i][f] = f==='threshold' ? Number(e.target.value)||0 : e.target.value;
-    };
-  });
-  wrap.querySelectorAll('button[data-del]').forEach(btn=>{
-    btn.onclick = ()=>{ salonSettings.memberTiers.splice(+btn.dataset.del,1); renderTiers(); };
-  });
-}
-function addTier(){
-  salonSettings.memberTiers = salonSettings.memberTiers || [];
-  salonSettings.memberTiers.push({name:'新等級', threshold:0, perk:''});
-  renderTiers();
-}
-function sortedTiers(){
-  return [...(salonSettings.memberTiers||[])]
-    .filter(t=>t.name)
-    .sort((a,b)=>(a.threshold||0)-(b.threshold||0));
-}
-function tierFor(spend){
-  const tiers = sortedTiers();
-  let idx = -1;
-  tiers.forEach((t,i)=>{ if(spend >= (t.threshold||0)) idx = i; });
-  return { tiers, idx, current: idx>=0?tiers[idx]:null, next: tiers[idx+1]||null };
-}
-function saveTiers(){
-  db.collection('salons').doc(currentUid).update({memberTiers: salonSettings.memberTiers||[]})
-    .then(()=>showToast('已儲存')).catch(err=>showToast('儲存失敗：'+err.message));
-}
-
-/* ---- 點數兌換方案 ---- */
-function renderRedeemPlans(){
-  const wrap = document.getElementById('redeemBody');
-  if(!wrap) return;
-  const plans = salonSettings.redeemPlans || [];
-  wrap.innerHTML='';
-  if(plans.length===0){ wrap.innerHTML = '<tr><td colspan="3" style="color:var(--gray); padding:14px 8px;">還沒有設定兌換方案</td></tr>'; return; }
-  plans.forEach((p,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px; width:90px;" value="${escapeHtml(p.pt||'')}" data-i="${i}" data-f="pt"></td>
-      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" value="${escapeHtml(p.item||'')}" data-i="${i}" data-f="item"></td>
-      <td><button class="mini-btn" style="background:#fbe4e1; color:#b95c50;" data-del="${i}">刪除</button></td>`;
-    wrap.appendChild(tr);
-  });
-  wrap.querySelectorAll('input[data-f]').forEach(inp=>{
-    inp.oninput = e=>{ salonSettings.redeemPlans[+e.target.dataset.i][e.target.dataset.f] = e.target.value; };
-  });
-  wrap.querySelectorAll('button[data-del]').forEach(btn=>{
-    btn.onclick = ()=>{ salonSettings.redeemPlans.splice(+btn.dataset.del,1); renderRedeemPlans(); };
-  });
-}
-function addRedeemPlan(){
-  salonSettings.redeemPlans = salonSettings.redeemPlans || [];
-  salonSettings.redeemPlans.push({pt:'100 點', item:''});
-  renderRedeemPlans();
-}
-function saveRedeemPlans(){
-  db.collection('salons').doc(currentUid).update({redeemPlans: salonSettings.redeemPlans||[]})
-    .then(()=>showToast('已儲存')).catch(err=>showToast('儲存失敗：'+err.message));
-}
-
-/* ---- 活動管理 ---- */
-function renderActivities(){
-  const wrap = document.getElementById('actList');
-  if(!wrap) return;
-  const acts = salonSettings.activities || [];
-  wrap.innerHTML='';
-  if(acts.length===0){ wrap.appendChild(el('div','empty-msg','還沒有建立任何活動')); }
-  acts.forEach((a,i)=>{
-    const card = el('div','settings-panel');
-    card.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
-        <div><h3 style="margin-bottom:2px;">${escapeHtml(a.name)}</h3><p style="margin:0 0 4px;">${escapeHtml(a.period||'')}</p>
-        <div style="font-size:.82rem; color:var(--medium);">內容：${escapeHtml(a.content||'')}　適用對象：${escapeHtml(a.target||'')}${a.code?'　優惠碼：'+escapeHtml(a.code):''}</div></div>
-        <button class="mini-btn" style="background:#fbe4e1; color:#b95c50;" data-del="${i}">刪除</button>
-      </div>`;
-    wrap.appendChild(card);
-  });
-  wrap.querySelectorAll('button[data-del]').forEach(btn=>{
-    btn.onclick = ()=>{
-      salonSettings.activities.splice(+btn.dataset.del,1);
-      db.collection('salons').doc(currentUid).update({activities: salonSettings.activities})
-        .then(()=>{ renderActivities(); showToast('已刪除'); });
-    };
-  });
-}
-function toggleActForm(){
-  const f = document.getElementById('actForm');
-  f.style.display = f.style.display==='none' ? 'block' : 'none';
-}
-function saveActivity(){
-  const name = document.getElementById('actName').value.trim();
-  if(!name){ showToast('請輸入活動名稱'); return; }
-  const act = {
-    name,
-    period: document.getElementById('actPeriod').value.trim(),
-    content: document.getElementById('actContent').value.trim(),
-    target: document.getElementById('actTarget').value.trim(),
-    code: document.getElementById('actCode').value.trim()
-  };
-  salonSettings.activities = salonSettings.activities || [];
-  salonSettings.activities.push(act);
-  db.collection('salons').doc(currentUid).update({activities: salonSettings.activities}).then(()=>{
-    ['actName','actPeriod','actContent','actTarget','actCode'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('actForm').style.display='none';
-    renderActivities();
-    showToast('已建立活動');
-  }).catch(err=>showToast('儲存失敗：'+err.message));
-}
-
-/* ---- 生日禮 ---- */
-function renderBirthday(){
-  const b = Object.assign({daysBefore:7, content:'', expiry:''}, salonSettings.birthdayGift||{});
-  const d = document.getElementById('bdayDays'); if(d) d.value = b.daysBefore;
-  const c = document.getElementById('bdayContent'); if(c) c.value = b.content;
-  const e = document.getElementById('bdayExpiry'); if(e) e.value = b.expiry;
-}
-function saveBirthday(){
-  const birthdayGift = {
-    daysBefore: Number(document.getElementById('bdayDays').value)||7,
-    content: document.getElementById('bdayContent').value.trim(),
-    expiry: document.getElementById('bdayExpiry').value.trim()
-  };
-  salonSettings.birthdayGift = birthdayGift;
-  db.collection('salons').doc(currentUid).update({birthdayGift})
-    .then(()=>showToast('已儲存設定')).catch(err=>showToast('儲存失敗：'+err.message));
+function savePromo(){
+  const promoText = document.getElementById('promoText').value.trim();
+  salonSettings.promoText = promoText;
+  db.collection('salons').doc(currentUid).update({promoText})
+    .then(()=>showToast('已儲存公告')).catch(err=>showToast('儲存失敗：'+err.message));
 }
 </script>
 </body>

@@ -248,11 +248,10 @@ function init(){
 
 /* ---- 優惠與須知 ---- */
 function renderPromo(){
-  const acts = salonSettings.activities || [];
   const banner = document.getElementById('promoBanner');
-  if(acts.length===0){ banner.classList.add('hidden'); return; }
-  const a = acts[0];
-  banner.textContent = `現正優惠｜${a.content}${a.code ? '（優惠碼：'+a.code+'）' : ''}`;
+  const text = (salonSettings.promoText||'').trim();
+  if(!text){ banner.classList.add('hidden'); return; }
+  banner.textContent = text;
   banner.classList.remove('hidden');
 }
 function renderRulesPanel(){
