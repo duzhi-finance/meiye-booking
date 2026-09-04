@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>UIUX 產品展示</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink:#C9938A; --light-pink:#F5E6E3;
+  --cream:#FAF3EE; --bg:#FAFAF8; --dark:#37352F; --medium:#5A5248;
+  --radius:18px;
+  --shadow: 0 8px 24px rgba(201,147,138,.14);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Noto Sans TC', sans-serif; background:var(--bg); color:var(--dark); -webkit-font-smoothing:antialiased; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+main{max-width:420px; width:100%; text-align:center;}
+h1{font-size:1.6rem; font-weight:900; margin-bottom:8px;}
+p.sub{color:var(--medium); font-size:.9rem; margin-bottom:32px;}
+.links{display:flex; flex-direction:column; gap:14px;}
+a.card{display:block; background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); padding:20px 22px; text-decoration:none; color:var(--dark); text-align:left;}
+a.card b{display:block; font-size:1.05rem; margin-bottom:4px;}
+a.card span{font-size:.82rem; color:var(--medium);}
+</style>
+</head>
+<body>
+<main>
+  <h1>UIUX</h1>
+  <p class="sub">產品示範 · 請選擇要查看的畫面</p>
+  <div class="links">
+    <a class="card" href="demo/booking.html"><b>客戶預約系統</b><span>顧客選美容師、日期、時段並送出預約（可切換不同產業模板）</span></a>
+    <a class="card" href="demo/admin.html"><b>店家後台</b><span>行事曆、客戶管理、預約規則與通知設定</span></a>
+  </div>
+  <p style="margin-top:24px; font-size:.72rem; color:var(--medium);">這是示範版本，資料為假資料，送出不會真的建立預約。</p>
+</main>
+</body>
+</html>
