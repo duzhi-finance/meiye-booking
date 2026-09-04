@@ -16,12 +16,12 @@
   --pink:#C9938A; --soft-pink:#E8C4BC; --light-pink:#F5E6E3;
   --blue:#7A9BAD; --soft-blue:#B8CFDA; --light-blue:#E3EDF3;
   --sage:#9AAE9B; --light-sage:#E8F0E8;
-  --cream:#FAF3EE; --bg:#FAFAF8; --dark:#37352F; --medium:#5A5248; --gray:#9B9A97;
+  --cream:#FAF3EE; --bg:#FAFAF8; --dark:#37352F; --medium:#5A5248; --gray:#9B9A97; --line:#E7E2DC;
   --radius:18px;
   --shadow: 0 8px 24px rgba(201,147,138,.14);
 }
 *{box-sizing:border-box; margin:0; padding:0;}
-body{font-family:'Chiron Sung HK','Noto Sans TC', sans-serif; background:var(--bg); color:var(--dark); padding-bottom:84px; -webkit-font-smoothing:antialiased;}
+body{font-family:'Chiron Sung HK','Noto Sans TC', sans-serif; background:var(--bg); color:var(--dark); -webkit-font-smoothing:antialiased;}
 button, input, select, textarea{font-family:inherit; font-size:1rem;}
 button{cursor:pointer; border:none; background:none;}
 .hidden{display:none !important;}
@@ -54,20 +54,29 @@ button{cursor:pointer; border:none; background:none;}
 .auth-toggle a{color:var(--pink); font-weight:700; cursor:pointer;}
 .auth-error{color:#b95c50; font-size:.8rem; margin-top:10px; text-align:center;}
 
-/* ---- Header / Nav ---- */
-header.top{
-  background:linear-gradient(135deg, var(--light-pink), var(--cream) 60%);
-  padding:20px 20px 24px; border-bottom-left-radius:28px; border-bottom-right-radius:28px;
-  position:relative; overflow:hidden;
-}
-header.top::after{content:""; position:absolute; right:-40px; top:-40px; width:150px; height:150px; border-radius:50%;
-  background:radial-gradient(circle, var(--soft-pink) 0%, transparent 70%); opacity:.6;}
-.brand{display:flex; align-items:center; justify-content:space-between; position:relative; z-index:1;}
-.brand h1{font-size:1.2rem; font-weight:900;}
-.brand .sub{font-size:.78rem; color:var(--medium); margin-top:2px; font-weight:500;}
-.icon-btn{width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.7); display:flex; align-items:center; justify-content:center; font-size:1.05rem; box-shadow:var(--shadow);}
+/* ---- App shell（側邊欄）---- */
+.app{display:grid; grid-template-columns:216px 1fr; min-height:100vh;}
+@media(max-width:860px){ .app{grid-template-columns:1fr;} }
+.sidebar{background:#fff; border-right:1px solid var(--line); padding:22px 14px; position:sticky; top:0; height:100vh; overflow-y:auto;}
+@media(max-width:860px){ .sidebar{position:static; height:auto; display:flex; align-items:center; gap:16px; border-right:none; border-bottom:1px solid var(--line); overflow-x:auto; padding:14px;} }
+.side-brand{padding:0 8px 18px; display:flex; align-items:center; justify-content:space-between; gap:8px;}
+@media(max-width:860px){ .side-brand{padding:0; flex-shrink:0;} }
+.side-brand .logo{font-size:1.15rem; font-weight:900;}
+.side-brand .sub{font-size:.66rem; color:var(--gray); margin-top:2px;}
+.side-brand .icon-btn{width:32px; height:32px; font-size:.9rem; box-shadow:none; background:var(--light-pink); flex-shrink:0;}
+.nav-list{list-style:none; display:flex; flex-direction:column; gap:2px;}
+@media(max-width:860px){ .nav-list{flex-direction:row; overflow-x:auto;} }
+.nav-item{display:flex; align-items:center; gap:8px; padding:10px 12px; border-left:3px solid transparent; width:100%; text-align:left; color:var(--medium); font-weight:700; font-size:.86rem; border-radius:0 10px 10px 0;}
+@media(max-width:860px){ .nav-item{width:auto; white-space:nowrap; border-left:none; border-bottom:2px solid transparent; border-radius:0;} }
+.nav-item:hover{background:var(--light-pink);}
+.nav-item.active{border-left-color:var(--pink); color:var(--pink); background:var(--light-pink);}
+@media(max-width:860px){ .nav-item.active{border-left-color:transparent; border-bottom-color:var(--pink); background:none;} }
 
-main{max-width:960px; margin:0 auto; padding:18px 16px 12px;}
+main{max-width:1000px; margin:0; padding:26px 30px 60px;}
+@media(max-width:640px){ main{padding:18px 16px 50px;} }
+.topbar{margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; gap:12px;}
+.topbar h1{font-size:1.3rem; font-weight:900;}
+.topbar .sub{font-size:.78rem; color:var(--medium); margin-top:2px; font-weight:500;}
 .view{display:none;}
 .view.active{display:block; animation:fadeIn .25s ease;}
 @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
@@ -93,38 +102,33 @@ section{margin-bottom:24px;}
 .mini-btn{background:var(--pink); color:#fff; font-weight:700; font-size:.78rem; padding:7px 12px; border-radius:20px; white-space:nowrap;}
 .empty-msg{text-align:center; color:var(--gray); font-size:.85rem; padding:22px 10px;}
 
-/* ---- Day strip ---- */
-.day-strip{display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:14px;}
-.day-chip{
-  min-width:52px; text-align:center; padding:8px 4px; border-radius:14px; background:#fff;
-  border:1.5px solid var(--light-pink); font-weight:700; color:var(--medium); flex-shrink:0;
-}
-.day-chip .dow{font-size:.66rem; display:block; color:var(--gray); font-weight:500;}
-.day-chip .num{font-size:1.05rem; display:block; margin-top:2px;}
-.day-chip.active{background:var(--pink); color:#fff; border-color:var(--pink);}
-.day-chip.active .dow{color:#fce8e5;}
-
-/* ---- Staff timeline ---- */
-.timeline-wrap{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); overflow-x:auto; padding:10px;}
-.timeline-grid{display:flex; min-width:100%;}
-.time-col{width:44px; flex-shrink:0; padding-top:38px;}
-.time-col .tl{font-size:.68rem; color:var(--gray); text-align:right; padding-right:6px; position:relative; top:-6px;}
-.staff-cols{display:flex; flex:1; gap:6px;}
-.staff-col{min-width:150px; flex:1;}
-.staff-head{display:flex; align-items:center; gap:8px; padding:6px 4px 10px;}
-.staff-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
-.staff-head b{font-size:.85rem;}
-.staff-head .hrs{font-size:.66rem; color:var(--gray); display:block;}
-.staff-track{position:relative; border-left:1px solid var(--light-pink); border-radius:8px; background:repeating-linear-gradient(
-    to bottom, transparent, transparent 59px, var(--light-pink) 59px, var(--light-pink) 60px);
-}
-.appt-block{
-  position:absolute; left:2px; right:2px; border-radius:10px; padding:6px 8px; overflow:hidden;
-  font-size:.72rem; color:#fff; cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,.1);
-}
-.appt-block b{display:block; font-size:.78rem; font-weight:700;}
-.appt-block .svc{opacity:.9; font-size:.68rem;}
-.appt-block.cancelled{opacity:.45; text-decoration:line-through;}
+/* ---- 行事曆（週選單 + 分美容師欄）---- */
+.cal-legend{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px;}
+.cal-legend .item{display:flex; align-items:center; gap:6px; font-size:.76rem; color:var(--medium);}
+.cal-legend .dot{width:9px; height:9px; border-radius:50%;}
+.cal-wrap{background:#fff; border:1px solid var(--line); border-radius:18px; overflow:hidden; box-shadow:var(--shadow);}
+.cal-weekbar{display:grid; grid-template-columns:repeat(7,1fr); border-bottom:1px solid var(--line);}
+.cal-wd{text-align:center; padding:10px 4px; border-right:1px solid var(--line); color:var(--medium); font-weight:700;}
+.cal-wd:last-child{border-right:none;}
+.cal-wd .dow{font-size:.62rem; color:var(--gray); display:block; font-weight:500;}
+.cal-wd .num{width:26px; height:26px; margin:4px auto 0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.95rem;}
+.cal-wd.active .num{background:var(--pink); color:#fff;}
+.cal-head-row{display:grid; grid-template-columns:52px repeat(var(--staffN,3),1fr); border-bottom:1px solid var(--line); background:var(--cream);}
+.cal-head-cell{padding:8px 8px; display:flex; align-items:center; gap:8px; border-left:1px solid var(--line); min-width:0;}
+.cal-head-cell:first-child{border-left:none;}
+.cal-head-cell .staff-dot{width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:.72rem; flex-shrink:0;}
+.cal-head-cell b{font-size:.8rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.cal-head-cell span{font-size:.62rem; color:var(--gray);}
+.cal-scroll{overflow-x:auto;}
+.cal-body{display:grid; grid-template-columns:52px repeat(var(--staffN,3),1fr); position:relative; min-width:520px;}
+.cal-axis{position:relative; border-right:1px solid var(--line);}
+.cal-axis .hr{position:absolute; left:0; right:6px; text-align:right; font-size:.64rem; color:var(--gray); transform:translateY(-50%);}
+.cal-col{position:relative; border-left:1px solid var(--line); background-image:repeating-linear-gradient(180deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent var(--hourpx,60px));}
+.appt-block{position:absolute; left:3px; right:3px; border-radius:10px; padding:6px 8px; overflow:hidden; cursor:pointer; border-left:3px solid; box-shadow:0 3px 8px rgba(0,0,0,.1);}
+.appt-block .t{font-size:.66rem; font-weight:700;}
+.appt-block .n{font-size:.76rem; font-weight:700; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.appt-block .svc{font-size:.64rem; opacity:.85; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.cal-empty{font-size:.82rem; color:var(--gray); text-align:center; padding:30px 8px; grid-column:1/-1;}
 
 /* ---- List ---- */
 .search-bar{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
@@ -187,14 +191,9 @@ section{margin-bottom:24px;}
 .link-box{display:flex; gap:8px; align-items:center; background:var(--light-pink); padding:10px 12px; border-radius:12px; font-size:.78rem; word-break:break-all;}
 .link-box button{background:var(--pink); color:#fff; padding:6px 12px; border-radius:10px; font-size:.72rem; font-weight:700; flex-shrink:0;}
 
-/* ---- FAB & bottom nav ---- */
-.fab{position:fixed; right:20px; bottom:88px; width:56px; height:56px; border-radius:50%; background:var(--pink); color:#fff;
+/* ---- FAB ---- */
+.fab{position:fixed; right:24px; bottom:24px; width:56px; height:56px; border-radius:50%; background:var(--pink); color:#fff;
   font-size:1.6rem; box-shadow:0 10px 24px rgba(201,147,138,.4); display:flex; align-items:center; justify-content:center; z-index:40;}
-nav.bottom{position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--light-pink);
-  display:flex; justify-content:space-around; padding:8px 2px 10px; z-index:40; overflow-x:auto;}
-nav.bottom button{display:flex; flex-direction:column; align-items:center; gap:2px; font-size:.64rem; color:var(--gray); font-weight:700; padding:4px 6px; flex-shrink:0;}
-nav.bottom button .ic{font-size:1.1rem;}
-nav.bottom button.active{color:var(--pink);}
 
 .toast{position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--dark); color:#fff; padding:10px 18px;
   border-radius:20px; font-size:.85rem; font-weight:500; z-index:100; opacity:0; pointer-events:none; transition:opacity .25s;}
@@ -232,98 +231,106 @@ nav.bottom button.active{color:var(--pink);}
 
 <!-- ===================== 主應用程式 ===================== -->
 <div id="app" class="hidden">
-  <header class="top">
-    <div class="brand">
-      <div>
-        <h1 id="salonNameDisplay">我的店</h1>
-        <div class="sub" id="todayLabel">--</div>
-      </div>
-      <button class="icon-btn" onclick="handleLogout()">🚪</button>
-    </div>
-  </header>
-
-  <main>
-    <!-- 儀表板 -->
-    <div class="view active" id="view-dashboard">
-      <section>
-        <div class="stat-grid">
-          <div class="stat-card pink"><div class="label">今日預約</div><div class="value" id="statToday">0</div></div>
-          <div class="stat-card blue"><div class="label">本週預約</div><div class="value" id="statWeek">0</div></div>
-          <div class="stat-card sage"><div class="label">本月營收</div><div class="value" id="statRevenue">$0</div></div>
-          <div class="stat-card cream"><div class="label">待提醒</div><div class="value" id="statRemind">0</div></div>
+  <div class="app">
+    <nav class="sidebar">
+      <div class="side-brand">
+        <div>
+          <div class="logo" id="salonNameDisplay">我的店</div>
+          <div class="sub">老闆娘後台</div>
         </div>
-      </section>
-      <section>
-        <div class="section-title">即將提醒</div>
-        <div id="reminderList"></div>
-      </section>
-    </div>
-
-    <!-- 行事曆（分美容師） -->
-    <div class="view" id="view-calendar">
-      <div class="day-strip" id="dayStrip"></div>
-      <div class="timeline-wrap">
-        <div class="timeline-grid" id="timelineGrid"></div>
+        <button class="icon-btn" onclick="handleLogout()">🚪</button>
       </div>
-    </div>
+      <ul class="nav-list">
+        <li><button class="nav-item active" data-view="dashboard" onclick="showView('dashboard')">🏠 儀表板</button></li>
+        <li><button class="nav-item" data-view="calendar" onclick="showView('calendar')">📅 行事曆</button></li>
+        <li><button class="nav-item" data-view="list" onclick="showView('list')">📋 預約列表</button></li>
+        <li><button class="nav-item" data-view="staff" onclick="showView('staff')">💇 員工</button></li>
+        <li><button class="nav-item" data-view="settings" onclick="showView('settings')">⚙️ 設定</button></li>
+      </ul>
+    </nav>
 
-    <!-- 預約列表 -->
-    <div class="view" id="view-list">
-      <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="搜尋姓名／電話／服務項目">
-        <select id="rangeFilter">
-          <option value="all">全部日期</option>
-          <option value="today">今天</option>
-          <option value="week">本週</option>
-          <option value="month">本月</option>
-          <option value="past">已過期</option>
-        </select>
+    <main>
+      <!-- 儀表板 -->
+      <div class="view active" id="view-dashboard">
+        <div class="topbar"><div><h1>儀表板</h1><div class="sub" id="todayLabel">--</div></div></div>
+        <section>
+          <div class="stat-grid">
+            <div class="stat-card pink"><div class="label">今日預約</div><div class="value" id="statToday">0</div></div>
+            <div class="stat-card blue"><div class="label">本週預約</div><div class="value" id="statWeek">0</div></div>
+            <div class="stat-card sage"><div class="label">本月營收</div><div class="value" id="statRevenue">$0</div></div>
+            <div class="stat-card cream"><div class="label">待提醒</div><div class="value" id="statRemind">0</div></div>
+          </div>
+        </section>
+        <section>
+          <div class="section-title">即將提醒</div>
+          <div id="reminderList"></div>
+        </section>
       </div>
-      <div class="filter-chips" id="statusChips"></div>
-      <div id="listContainer"></div>
-    </div>
 
-    <!-- 員工管理 -->
-    <div class="view" id="view-staff">
-      <div class="section-title">美容師 / 美甲師 <span class="hint">會顯示為行事曆分欄</span></div>
-      <div id="staffContainer"></div>
-    </div>
-
-    <!-- 設定 -->
-    <div class="view" id="view-settings">
-      <div class="settings-panel">
-        <h3>客戶預約連結</h3>
-        <p>把這個連結放進 LINE 官方帳號的選單或訊息裡，客人點開就能自己選時段預約。</p>
-        <div class="link-box">
-          <span id="bookingLink">--</span>
-          <button onclick="copyBookingLink()">複製</button>
+      <!-- 行事曆（分美容師） -->
+      <div class="view" id="view-calendar">
+        <div class="topbar"><div><h1>行事曆</h1><div class="sub">依日期查看每位美容師的預約，狀態用顏色區分</div></div></div>
+        <div class="cal-legend" id="calLegend"></div>
+        <div class="cal-wrap">
+          <div class="cal-weekbar" id="calWeekbar"></div>
+          <div class="cal-head-row" id="calHeadRow"></div>
+          <div class="cal-scroll"><div class="cal-body" id="calBody"></div></div>
         </div>
       </div>
-      <div class="settings-panel">
-        <h3>營業時間</h3>
-        <p>用於行事曆顯示的時間範圍。</p>
-        <div class="field-row">
-          <div class="field"><label>開始時間</label><select id="bizStart"></select></div>
-          <div class="field"><label>結束時間</label><select id="bizEnd"></select></div>
+
+      <!-- 預約列表 -->
+      <div class="view" id="view-list">
+        <div class="topbar"><h1>預約列表</h1></div>
+        <div class="search-bar">
+          <input type="text" id="searchInput" placeholder="搜尋姓名／電話／服務項目">
+          <select id="rangeFilter">
+            <option value="all">全部日期</option>
+            <option value="today">今天</option>
+            <option value="week">本週</option>
+            <option value="month">本月</option>
+            <option value="past">已過期</option>
+          </select>
         </div>
-        <button class="btn-main" onclick="saveBizHours()">儲存設定</button>
+        <div class="filter-chips" id="statusChips"></div>
+        <div id="listContainer"></div>
       </div>
-      <div class="settings-panel">
-        <h3>關於 LINE 官方帳號自動提醒</h3>
-        <p>目前提醒訊息是系統自動整理好文字，由你手動複製貼到 LINE 傳送給客人（在「即將提醒」卡片按「產生提醒訊息」）。若要做到真正自動推播，需要另外串接 LINE Messaging API 搭配伺服器功能，之後可以再幫你加上。</p>
+
+      <!-- 員工管理 -->
+      <div class="view" id="view-staff">
+        <div class="topbar"><h1>員工</h1></div>
+        <div class="section-title">美容師 / 美甲師 <span class="hint">會顯示為行事曆分欄</span></div>
+        <div id="staffContainer"></div>
       </div>
-    </div>
-  </main>
+
+      <!-- 設定 -->
+      <div class="view" id="view-settings">
+        <div class="topbar"><h1>設定</h1></div>
+        <div class="settings-panel">
+          <h3>客戶預約連結</h3>
+          <p>把這個連結放進 LINE 官方帳號的選單或訊息裡，客人點開就能自己選時段預約。</p>
+          <div class="link-box">
+            <span id="bookingLink">--</span>
+            <button onclick="copyBookingLink()">複製</button>
+          </div>
+        </div>
+        <div class="settings-panel">
+          <h3>營業時間</h3>
+          <p>用於行事曆顯示的時間範圍。</p>
+          <div class="field-row">
+            <div class="field"><label>開始時間</label><select id="bizStart"></select></div>
+            <div class="field"><label>結束時間</label><select id="bizEnd"></select></div>
+          </div>
+          <button class="btn-main" onclick="saveBizHours()">儲存設定</button>
+        </div>
+        <div class="settings-panel">
+          <h3>關於 LINE 官方帳號自動提醒</h3>
+          <p>目前提醒訊息是系統自動整理好文字，由你手動複製貼到 LINE 傳送給客人（在「即將提醒」卡片按「產生提醒訊息」）。若要做到真正自動推播，需要另外串接 LINE Messaging API 搭配伺服器功能，之後可以再幫你加上。</p>
+        </div>
+      </div>
+    </main>
+  </div>
 
   <button class="fab" onclick="handleFabClick()">＋</button>
-
-  <nav class="bottom">
-    <button class="active" data-view="dashboard" onclick="showView('dashboard')"><span class="ic">🏠</span>儀表板</button>
-    <button data-view="calendar" onclick="showView('calendar')"><span class="ic">📅</span>行事曆</button>
-    <button data-view="list" onclick="showView('list')"><span class="ic">📋</span>列表</button>
-    <button data-view="staff" onclick="showView('staff')"><span class="ic">💇</span>員工</button>
-    <button data-view="settings" onclick="showView('settings')"><span class="ic">⚙️</span>設定</button>
-  </nav>
 </div>
 
 <!-- 新增/編輯 預約 Modal -->
@@ -400,6 +407,13 @@ const db = firebase.firestore();
 
 const STATUSES = ['待確認','已確認','已完成','未到','已取消'];
 const COLOR_PALETTE = ['#C9938A','#7A9BAD','#9AAE9B','#B8A6C9','#D4A574','#8AA6C9'];
+const STATUS_COLORS = {
+  '待確認':{bg:'#E3EDF3', fg:'#7A9BAD'},
+  '已確認':{bg:'#F5E6E3', fg:'#C9938A'},
+  '已完成':{bg:'#E8F0E8', fg:'#5a7a5b'},
+  '未到':{bg:'#f1e2e2', fg:'#a35a5a'},
+  '已取消':{bg:'#ece9e4', fg:'#9B9A97'}
+};
 
 let currentUid = null;
 let salonSettings = { name:'', bizStart:9, bizEnd:20 };
@@ -548,7 +562,7 @@ function handleFabClick(){
 function showView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
-  document.querySelectorAll('nav.bottom button').forEach(b=> b.classList.toggle('active', b.dataset.view===name));
+  document.querySelectorAll('.nav-item').forEach(b=> b.classList.toggle('active', b.dataset.view===name));
   renderAll();
 }
 
@@ -590,51 +604,62 @@ function renderReminderList(list){
 }
 
 /* ================== 行事曆（分美容師） ================== */
+function renderCalLegend(){
+  const wrap = document.getElementById('calLegend');
+  wrap.innerHTML='';
+  STATUSES.forEach(st=>{
+    const item = el('div','item');
+    item.innerHTML = `<span class="dot" style="background:${STATUS_COLORS[st].fg}"></span>${st}`;
+    wrap.appendChild(item);
+  });
+}
 function renderDayStrip(){
-  const wrap = document.getElementById('dayStrip');
+  const wrap = document.getElementById('calWeekbar');
   wrap.innerHTML='';
   const start = startOfWeek(new Date());
   const dayNames = ['一','二','三','四','五','六','日'];
   for(let i=0;i<7;i++){
     const d = addDays(start,i);
-    const chip = el('div','day-chip'+(d.getTime()===selectedDate.getTime()?' active':''));
+    const chip = el('div','cal-wd'+(d.getTime()===selectedDate.getTime()?' active':''));
     chip.innerHTML = `<span class="dow">週${dayNames[i]}</span><span class="num">${d.getDate()}</span>`;
     chip.onclick = ()=>{ selectedDate = d; renderCalendar(); };
     wrap.appendChild(chip);
   }
 }
 function renderCalendar(){
+  renderCalLegend();
   renderDayStrip();
-  const grid = document.getElementById('timelineGrid');
-  grid.innerHTML='';
+  const headRow = document.getElementById('calHeadRow');
+  const body = document.getElementById('calBody');
+  headRow.innerHTML=''; body.innerHTML='';
   const startH = salonSettings.bizStart ?? 9, endH = salonSettings.bizEnd ?? 20;
-  const totalHours = endH - startH;
+  const totalHours = Math.max(endH - startH, 1);
   const rowH = 60;
+  document.documentElement.style.setProperty('--staffN', Math.max(staffList.length,1));
+  document.documentElement.style.setProperty('--hourpx', rowH+'px');
 
   if(staffList.length===0){
-    grid.innerHTML = '<div class="empty-msg" style="padding:30px;">還沒有員工，請先到「員工」頁新增美容師</div>';
+    body.innerHTML = '<div class="cal-empty">還沒有員工，請先到「員工」頁新增美容師</div>';
     return;
   }
 
-  const timeCol = el('div','time-col');
+  headRow.innerHTML = '<div class="cal-head-cell"></div>' + staffList.map(s=>
+    `<div class="cal-head-cell"><div class="staff-dot" style="background:${s.color||'#C9938A'}">${escapeHtml((s.name||'').slice(0,1))}</div><div><b>${escapeHtml(s.name)}</b><span>${s.workStart!=null?s.workStart+':00–'+s.workEnd+':00':''}</span></div></div>`
+  ).join('');
+
+  const totalH = totalHours*rowH;
+  let axis = `<div class="cal-axis" style="height:${totalH}px;">`;
   for(let h=startH; h<=endH; h++){
-    const lbl = el('div','tl', h+':00'); lbl.style.height = (h===endH?0:rowH)+'px';
-    timeCol.appendChild(lbl);
+    axis += `<div class="hr" style="top:${(h-startH)*rowH}px;">${h}:00</div>`;
   }
-  grid.appendChild(timeCol);
+  axis += '</div>';
 
-  const staffCols = el('div','staff-cols');
+  const dayStart = new Date(selectedDate); dayStart.setHours(0,0,0,0);
+  const dayEnd = addDays(dayStart,1);
+
+  let cols = '';
   staffList.forEach(staff=>{
-    const col = el('div','staff-col');
-    const head = el('div','staff-head');
-    head.innerHTML = `<span class="staff-dot" style="background:${staff.color||'#C9938A'}"></span><div><b>${escapeHtml(staff.name)}</b><span class="hrs">${staff.workStart!=null?staff.workStart+':00-'+staff.workEnd+':00':''}</span></div>`;
-    col.appendChild(head);
-
-    const track = el('div','staff-track');
-    track.style.height = (totalHours*rowH)+'px';
-
-    const dayStart = new Date(selectedDate); dayStart.setHours(0,0,0,0);
-    const dayEnd = addDays(dayStart,1);
+    let inner = '';
     const dayAppts = appointments.filter(a=>{
       const d = new Date(a.datetime);
       return a.staffId===staff.id && d>=dayStart && d<dayEnd;
@@ -645,18 +670,20 @@ function renderCalendar(){
       const durMin = a.duration || 60;
       const top = (startMin/60)*rowH;
       const height = Math.max((durMin/60)*rowH - 3, 24);
-      const block = el('div','appt-block'+(a.status==='已取消'?' cancelled':''));
-      block.style.top = top+'px';
-      block.style.height = height+'px';
-      block.style.background = staff.color || '#C9938A';
-      block.innerHTML = `<b>${fmtTime(d)} ${escapeHtml(a.name)}</b><span class="svc">${escapeHtml(a.service)}</span>`;
-      block.onclick = ()=> openForm(a.id);
-      track.appendChild(block);
+      const sc = STATUS_COLORS[a.status] || STATUS_COLORS['待確認'];
+      inner += `<div class="appt-block" data-id="${a.id}" style="top:${top}px; height:${height}px; background:${sc.bg}; color:${sc.fg}; border-left-color:${sc.fg};">
+        <div class="t">${fmtTime(d)}</div>
+        <div class="n">${escapeHtml(a.name)}</div>
+        <div class="svc">${escapeHtml(a.service)}</div>
+      </div>`;
     });
-    col.appendChild(track);
-    staffCols.appendChild(col);
+    cols += `<div class="cal-col" style="height:${totalH}px;">${inner}</div>`;
   });
-  grid.appendChild(staffCols);
+
+  body.innerHTML = axis + cols;
+  body.querySelectorAll('.appt-block').forEach(elm=>{
+    elm.onclick = ()=> openForm(elm.dataset.id);
+  });
 }
 
 /* ================== 預約列表 ================== */
