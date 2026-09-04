@@ -318,6 +318,14 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
           <div class="section-title">即將提醒</div>
           <div id="reminderList"></div>
         </section>
+        <section>
+          <div class="section-title">🎂 今日/近期壽星</div>
+          <div id="birthdayList"></div>
+        </section>
+        <section>
+          <div class="section-title">🎉 升級提醒</div>
+          <div id="upgradeList"></div>
+        </section>
       </div>
 
       <!-- 行事曆（分美容師） -->
@@ -438,9 +446,9 @@ table.data td{padding:10px 8px; border-top:1px solid var(--light-pink); vertical
           </div>
           <div class="settings-panel">
             <h3>會員等級</h3>
-            <p style="margin-bottom:10px;">等級名稱、升級條件、專屬福利都自己填</p>
+            <p style="margin-bottom:10px;">填消費滿多少錢升級，系統會自動判斷客人目前等級與升級進度</p>
             <table class="data">
-              <thead><tr><th>等級</th><th>升級條件</th><th>專屬福利</th><th></th></tr></thead>
+              <thead><tr><th>等級</th><th>消費滿（NT$）</th><th>專屬福利</th><th></th></tr></thead>
               <tbody id="tierBody"></tbody>
             </table>
             <button class="btn-ghost" style="margin-top:10px;" onclick="addTier()">＋ 新增等級</button>
@@ -627,7 +635,8 @@ let staffList = [];
 let appointments = [];
 let currentStatusFilter = 'all';
 let selectedDate = startOfDay(new Date());
-let unsubStaff = null, unsubAppts = null;
+let unsubStaff = null, unsubAppts = null, unsubCustomers = null;
+let customerMeta = {};
 let isRegisterMode = false;
 let formStatus = '待確認';
 let selectedColor = COLOR_PALETTE[0];
@@ -683,6 +692,7 @@ function translateAuthError(err){
 function handleLogout(){
   if(unsubStaff) unsubStaff();
   if(unsubAppts) unsubAppts();
+  if(unsubCustomers) unsubCustomers();
   auth.signOut();
 }
 
@@ -705,6 +715,9 @@ function loadSalonData(){
   salonRef.get().then(doc => {
     if(doc.exists){
       salonSettings = Object.assign(salonSettings, doc.data());
+      (salonSettings.memberTiers||[]).forEach(t=>{
+        if(t.threshold==null){ const m = String(t.cond||'').match(/[\d,]+/); t.threshold = m ? Number(m[0].replace(/,/g,'')) : 0; }
+      });
       document.getElementById('salonNameDisplay').textContent = salonSettings.name || '我的店';
       renderSettings();
       renderFormQuestions();
@@ -736,6 +749,13 @@ function loadSalonData(){
   unsubAppts = db.collection('salons').doc(currentUid).collection('appointments')
     .onSnapshot(snap => {
       appointments = snap.docs.map(d => Object.assign({id:d.id}, d.data()));
+      renderAll();
+    });
+
+  unsubCustomers = db.collection('salons').doc(currentUid).collection('customers')
+    .onSnapshot(snap => {
+      customerMeta = {};
+      snap.docs.forEach(d => { customerMeta[d.id] = d.data(); });
       renderAll();
     });
 
@@ -789,6 +809,73 @@ function renderDashboard(){
   const rem = upcomingForReminder();
   document.getElementById('statRemind').textContent = rem.length;
   renderReminderList(rem);
+  renderBirthdayList();
+  renderUpgradeList();
+}
+function daysUntilBirthday(birthday, now){
+  if(!birthday) return null;
+  const b = new Date(birthday);
+  if(isNaN(b)) return null;
+  let next = new Date(now.getFullYear(), b.getMonth(), b.getDate());
+  next.setHours(0,0,0,0);
+  const today = startOfDay(now);
+  if(next < today) next = new Date(now.getFullYear()+1, b.getMonth(), b.getDate());
+  return Math.round((next-today)/86400000);
+}
+function renderBirthdayList(){
+  const wrap = document.getElementById('birthdayList');
+  if(!wrap) return;
+  const daysBefore = (salonSettings.birthdayGift && salonSettings.birthdayGift.daysBefore) || 7;
+  const now = new Date();
+  const list = buildCustomerList()
+    .map(c=>({ c, meta: customerMeta[c.phone]||{}, days: daysUntilBirthday((customerMeta[c.phone]||{}).birthday, now) }))
+    .filter(x=> x.days!=null && x.days<=daysBefore)
+    .sort((a,b)=> a.days-b.days);
+  wrap.innerHTML='';
+  if(list.length===0){ wrap.appendChild(el('div','empty-msg', `${daysBefore} 天內沒有壽星`)); return; }
+  list.forEach(({c, days})=>{
+    const card = el('div','reminder-card');
+    const when = days===0 ? '今天生日🎉' : `${days} 天後生日`;
+    card.innerHTML = `<div class="info"><b>${escapeHtml(c.name)}</b><div class="meta">${escapeHtml(c.phone)}・${when}</div></div>`;
+    const btn = el('button','mini-btn','複製生日文案');
+    btn.onclick = ()=>{
+      const g = salonSettings.birthdayGift||{};
+      const msg = `${c.name}您好！${g.content||'生日快樂，祝您天天開心！'}${g.expiry?'（使用期限：'+g.expiry+'）':''}`;
+      openTextModal(msg);
+    };
+    card.appendChild(btn);
+    wrap.appendChild(card);
+  });
+}
+function renderUpgradeList(){
+  const wrap = document.getElementById('upgradeList');
+  if(!wrap) return;
+  const list = buildCustomerList().map(c=>{
+    const meta = customerMeta[c.phone]||{};
+    const { current, idx } = tierFor(c.spend);
+    return { c, meta, current, idx };
+  }).filter(x=> x.current && x.idx > (x.meta.lastTierIndex ?? -1));
+  wrap.innerHTML='';
+  if(list.length===0){ wrap.appendChild(el('div','empty-msg','目前沒有客人達到新的升級門檻')); return; }
+  list.forEach(({c, current, idx})=>{
+    const card = el('div','reminder-card');
+    card.innerHTML = `<div class="info"><b>${escapeHtml(c.name)}</b><div class="meta">${escapeHtml(c.phone)}・累積消費 ${fmtMoney(c.spend)}・可升級「${escapeHtml(current.name)}」</div></div>`;
+    const wrapBtns = el('div');
+    wrapBtns.style.display='flex'; wrapBtns.style.gap='6px';
+    const btn = el('button','mini-btn','複製升級文案');
+    btn.onclick = ()=>{
+      const msg = `${c.name}您好！恭喜您升級為「${current.name}」會員${current.perk?'，專屬福利：'+current.perk:''}，感謝您的長期支持 🌸`;
+      openTextModal(msg);
+    };
+    const doneBtn = el('button','mini-btn','標記已通知'); doneBtn.style.background='var(--light-sage)'; doneBtn.style.color='#5a7a5b';
+    doneBtn.onclick = ()=>{
+      db.collection('salons').doc(currentUid).collection('customers').doc(c.phone)
+        .set({lastTierIndex: idx}, {merge:true}).then(()=>showToast('已標記'));
+    };
+    wrapBtns.appendChild(btn); wrapBtns.appendChild(doneBtn);
+    card.appendChild(wrapBtns);
+    wrap.appendChild(card);
+  });
 }
 function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
 function countInRange(s,e){ return appointments.filter(a=>{ const d=new Date(a.datetime); return d>=s && d<e && a.status!=='已取消'; }).length; }
@@ -1097,7 +1184,10 @@ function populateHourSelect(elemId){
 function openMsgModal(a){
   const d = new Date(a.datetime);
   const msg = `您好 ${a.name}！提醒您預約於 ${fmtDate(d)}（${fmtTime(d)}）進行「${a.service}」服務，期待您的光臨 🌸\n若時間需要調整，請盡早告知我們，謝謝！`;
-  document.getElementById('msgText').value = msg;
+  openTextModal(msg);
+}
+function openTextModal(text){
+  document.getElementById('msgText').value = text;
   document.getElementById('msgModal').classList.add('active');
 }
 function closeMsgModal(){ document.getElementById('msgModal').classList.remove('active'); }
@@ -1224,11 +1314,27 @@ function renderCustDetail(customers){
   if(!wrap) return;
   const c = customers.find(x=>x.phone===activeCustPhone);
   if(!c){ wrap.innerHTML = '<div class="empty-msg">選一位客戶查看詳細資料</div>'; return; }
+  const meta = customerMeta[c.phone]||{};
+  const { current, next } = tierFor(c.spend);
+  const points = computePoints(c.spend, c.phone);
   wrap.innerHTML = `
     <div class="settings-panel">
       <div class="cust-header">
         <div class="cust-avatar">${escapeHtml((c.name||'?').slice(0,1))}</div>
         <div><h2>${escapeHtml(c.name||'（未命名）')}</h2><div class="hrs" style="color:var(--gray); font-size:.8rem;">${escapeHtml(c.phone)}</div></div>
+      </div>
+      <div class="field" style="margin-top:12px; margin-bottom:0;"><label>生日</label><input type="date" class="text-input" id="custBday" value="${meta.birthday||''}"></div>
+    </div>
+    <div class="settings-panel">
+      <h3>會員等級與點數</h3>
+      <div class="stat-grid">
+        <div class="stat-card pink"><div class="label">目前等級</div><div class="value" style="font-size:1.1rem;">${current?escapeHtml(current.name):'一般客戶'}</div></div>
+        <div class="stat-card blue"><div class="label">${next?'距下一等級':'已是最高等級'}</div><div class="value" style="font-size:1rem;">${next?fmtMoney(Math.max((next.threshold||0)-c.spend,0)):'—'}</div></div>
+        <div class="stat-card sage"><div class="label">點數餘額</div><div class="value" style="font-size:1.2rem;">${points}</div></div>
+      </div>
+      <div class="field-row2" style="margin-top:10px;">
+        <div class="lbl" style="font-size:.82rem;">兌換點數</div>
+        <div class="ctrl"><input class="num-input" type="number" id="redeemAmt" placeholder="0"><button class="mini-btn" id="redeemBtn">兌換</button></div>
       </div>
     </div>
     <div class="settings-panel">
@@ -1247,6 +1353,26 @@ function renderCustDetail(customers){
         return `<div class="reminder-card"><div class="info"><b>${escapeHtml(h.service)}</b><div class="meta">${fmtDate(d)} ${fmtTime(d)}・${fmtMoney(h.amount)}</div></div><span class="badge ${h.status}">${h.status}</span></div>`;
       }).join('') || '<div class="empty-msg">沒有紀錄</div>'}
     </div>`;
+  document.getElementById('custBday').onchange = e=>{
+    db.collection('salons').doc(currentUid).collection('customers').doc(c.phone)
+      .set({birthday: e.target.value}, {merge:true}).then(()=>showToast('已儲存生日'));
+  };
+  document.getElementById('redeemBtn').onclick = ()=>{
+    const amt = Number(document.getElementById('redeemAmt').value)||0;
+    if(amt<=0){ showToast('請輸入要兌換的點數'); return; }
+    if(amt>points){ showToast('點數不足'); return; }
+    const newRedeemed = (meta.pointsRedeemed||0) + amt;
+    db.collection('salons').doc(currentUid).collection('customers').doc(c.phone)
+      .set({pointsRedeemed: newRedeemed}, {merge:true}).then(()=>showToast('已兌換 '+amt+' 點'));
+  };
+}
+function computePoints(spend, phone){
+  const l = salonSettings.loyalty || {};
+  const base = l.pointBase || 0;
+  const rate = l.pointRate || 0;
+  const earned = base>0 ? Math.floor(spend/base)*rate : 0;
+  const redeemed = (customerMeta[phone]||{}).pointsRedeemed || 0;
+  return Math.max(earned - redeemed, 0);
 }
 document.getElementById('custSearch')?.addEventListener('input', renderCRM);
 
@@ -1384,13 +1510,16 @@ function renderTiers(){
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" value="${escapeHtml(t.name||'')}" data-i="${i}" data-f="name"></td>
-      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" value="${escapeHtml(t.cond||'')}" data-i="${i}" data-f="cond"></td>
+      <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" type="number" min="0" value="${t.threshold||0}" data-i="${i}" data-f="threshold"></td>
       <td><input class="text-input" style="border:1px solid var(--light-pink); border-radius:8px; padding:6px 8px;" value="${escapeHtml(t.perk||'')}" data-i="${i}" data-f="perk"></td>
       <td><button class="mini-btn" style="background:#fbe4e1; color:#b95c50;" data-del="${i}">刪除</button></td>`;
     wrap.appendChild(tr);
   });
   wrap.querySelectorAll('input[data-f]').forEach(inp=>{
-    inp.oninput = e=>{ salonSettings.memberTiers[+e.target.dataset.i][e.target.dataset.f] = e.target.value; };
+    inp.oninput = e=>{
+      const f = e.target.dataset.f;
+      salonSettings.memberTiers[+e.target.dataset.i][f] = f==='threshold' ? Number(e.target.value)||0 : e.target.value;
+    };
   });
   wrap.querySelectorAll('button[data-del]').forEach(btn=>{
     btn.onclick = ()=>{ salonSettings.memberTiers.splice(+btn.dataset.del,1); renderTiers(); };
@@ -1398,8 +1527,19 @@ function renderTiers(){
 }
 function addTier(){
   salonSettings.memberTiers = salonSettings.memberTiers || [];
-  salonSettings.memberTiers.push({name:'新等級', cond:'', perk:''});
+  salonSettings.memberTiers.push({name:'新等級', threshold:0, perk:''});
   renderTiers();
+}
+function sortedTiers(){
+  return [...(salonSettings.memberTiers||[])]
+    .filter(t=>t.name)
+    .sort((a,b)=>(a.threshold||0)-(b.threshold||0));
+}
+function tierFor(spend){
+  const tiers = sortedTiers();
+  let idx = -1;
+  tiers.forEach((t,i)=>{ if(spend >= (t.threshold||0)) idx = i; });
+  return { tiers, idx, current: idx>=0?tiers[idx]:null, next: tiers[idx+1]||null };
 }
 function saveTiers(){
   db.collection('salons').doc(currentUid).update({memberTiers: salonSettings.memberTiers||[]})
