@@ -1,0 +1,655 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>UIUX 預約票根</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light dark;
+  --ink:#37352F; --ink-soft:#5A5248; --ink-faint:#9B9A97;
+  --paper:#FFFFFF; --panel:#FFFFFF; --panel-2:#F7EFEA;
+  --clay:#C9938A; --clay-dim:#AD7A70; --clay-soft:#E8C4BC; --clay-pale:#F5E6E3;
+  --moss:#8A9D8B; --moss-pale:#E8F0E8;
+  --gold:#7A9BAD; --gold-pale:#E3EDF3;
+  --line:#E7E2DC;
+  --shadow: 0 30px 60px -20px rgba(90,82,72,.16);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#F0E9E3; --ink-soft:#C9BBAE; --ink-faint:#96897C;
+    --paper:#211C18; --panel:#2B241F; --panel-2:#3A2C28;
+    --clay:#DDA79C; --clay-dim:#EABDB3; --clay-soft:#5A3F38; --clay-pale:#3A2A25;
+    --moss:#ADBE9E; --moss-pale:#333A2C;
+    --gold:#A9C2D2; --gold-pale:#263540;
+    --line:#3D332C;
+    --shadow: 0 30px 60px -20px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#F0E9E3; --ink-soft:#C9BBAE; --ink-faint:#96897C;
+  --paper:#211C18; --panel:#2B241F; --panel-2:#3A2C28;
+  --clay:#DDA79C; --clay-dim:#EABDB3; --clay-soft:#5A3F38; --clay-pale:#3A2A25;
+  --moss:#ADBE9E; --moss-pale:#333A2C;
+  --gold:#A9C2D2; --gold-pale:#263540;
+  --line:#3D332C;
+  --shadow: 0 30px 60px -20px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; -webkit-font-smoothing:antialiased;}
+button,input,textarea{font-family:inherit;}
+h1,h2,h3,h4{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:500; text-wrap:balance;}
+.serif{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:700; letter-spacing:.02em;}
+.mono{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-variant-numeric:tabular-nums;}
+
+/* ---------------- page ---------------- */
+.screen{max-width:480px; margin:0 auto; padding-bottom:40px; position:relative;}
+.brandbar{padding:36px 22px 6px; text-align:center;}
+.brandbar .logo{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:1.6rem; font-weight:800; letter-spacing:.06em;}
+.brandbar .tag{font-size:.72rem; color:var(--ink-faint); margin-top:4px;}
+
+.promo-banner{margin:14px 16px 0; background:var(--clay-pale); color:var(--clay-dim); font-size:.74rem; font-weight:600; text-align:center; padding:8px 12px; border-radius:10px;}
+
+.steps-row{display:flex; margin:16px 16px 18px;}
+.step-item{flex:1; text-align:center; font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.62rem; letter-spacing:.03em; color:var(--ink-faint); padding-top:8px; border-top:2px solid var(--line);}
+.step-item .n{display:block; font-size:.82rem; margin-bottom:3px;}
+.step-item.active{color:var(--clay); border-color:var(--clay);}
+.step-item.done{color:var(--moss); border-color:var(--moss);}
+
+/* ---------------- 預約回顧 ---------------- */
+.recap-card{background:var(--panel-2); border-radius:14px; padding:12px 16px; margin-bottom:16px;}
+.recap-row{display:flex; justify-content:space-between; gap:10px; font-size:.82rem; padding:5px 0;}
+.recap-row .k{color:var(--ink-faint);}
+.recap-row .v{font-weight:700; text-align:right;}
+
+/* ---------------- steps content ---------------- */
+.pane{padding:2px 18px 24px;}
+.pane.hidden{display:none;}
+.pane h3{font-size:1.05rem; font-weight:600; margin:4px 0 14px;}
+.back{display:inline-block; font-size:.76rem; color:var(--ink-faint); margin-bottom:8px; cursor:pointer; background:none; border:none; padding:0; font-family:inherit;}
+.back:hover{color:var(--clay);}
+
+.staff-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.staff-card{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px 10px; text-align:center; cursor:pointer; transition:transform .15s ease,border-color .15s ease;}
+.staff-card:hover{transform:translateY(-2px); border-color:var(--clay-soft);}
+.staff-card:focus-visible{outline:2px solid var(--clay); outline-offset:2px;}
+.avatar{width:42px; height:42px; border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:1.05rem;}
+.staff-card b{display:block; font-size:.9rem;}
+.staff-tag{display:inline-block; margin-top:5px; font-size:.63rem; padding:2px 9px; border-radius:20px; background:var(--clay-pale); color:var(--clay-dim);}
+.staff-hours{display:block; margin-top:6px; font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.6rem; color:var(--ink-faint);}
+
+.day-strip{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;}
+.day-chip{min-width:52px; text-align:center; padding:9px 4px; border-radius:14px; background:var(--panel); border:1px solid var(--line); flex-shrink:0; cursor:pointer;}
+.day-chip .dow{display:block; font-size:.6rem; color:var(--ink-faint);}
+.day-chip .num{display:block; margin-top:3px; font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.98rem; font-weight:600;}
+.day-chip.active{background:var(--clay); border-color:var(--clay);}
+.day-chip.active .dow{color:rgba(255,255,255,.8);} .day-chip.active .num{color:#fff;}
+
+.slot-group h4{font-size:.86rem; font-weight:600; color:var(--ink-soft); margin:16px 0 8px;}
+.slot-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:7px;}
+.slot-btn{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.72rem; padding:9px 2px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer;}
+.slot-btn:hover:not(:disabled){border-color:var(--clay-soft);}
+.slot-btn:focus-visible{outline:2px solid var(--clay); outline-offset:1px;}
+.slot-btn:disabled{color:var(--ink-faint); text-decoration:line-through; opacity:.5; background:var(--panel-2); cursor:default;}
+.slot-btn.selected{background:var(--clay); border-color:var(--clay); color:#fff;}
+.empty{text-align:center; color:var(--ink-faint); font-size:.82rem; padding:18px 8px;}
+
+.form-row{padding:10px 2px; border-bottom:1px dashed var(--line);}
+.form-row label{display:block; font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-size:.62rem; letter-spacing:.04em; color:var(--ink-faint); margin-bottom:4px;}
+.form-row input,.form-row textarea{width:100%; border:none; background:transparent; color:var(--ink); font-size:.92rem; padding:2px 0; outline:none;}
+.form-row textarea{resize:vertical; min-height:44px; font-family:inherit;}
+.form-row:focus-within{border-bottom-color:var(--clay);}
+.btn-main{width:100%; margin-top:18px; background:var(--clay); color:#fff; font-weight:700; padding:13px; border-radius:14px; font-size:.9rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:7px;}
+.btn-main:hover{background:var(--clay-dim);}
+.btn-main:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+.btn-ghost{width:100%; margin-top:10px; background:none; border:1px solid var(--line); color:var(--ink-soft); font-weight:600; padding:12px; border-radius:14px; font-size:.86rem; cursor:pointer;}
+.hint{font-size:.72rem; color:var(--ink-faint); margin-top:8px; text-align:center;}
+
+.success{padding:16px 22px 30px; text-align:center;}
+.stamp-wrap{position:relative; display:inline-block; margin:22px auto 10px; padding:10px 6px;}
+.stamp-wrap h3{font-size:1.4rem; font-weight:500; margin:0; position:relative; z-index:1; white-space:nowrap;}
+.stamp-big{position:absolute; left:50%; top:52%; transform:translate(-50%,-50%) rotate(-9deg); font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:900; font-size:2.5rem; letter-spacing:.14em; color:var(--moss); border:5px double var(--moss); padding:2px 20px; border-radius:14px; opacity:.62; mix-blend-mode:multiply; white-space:nowrap; z-index:0; pointer-events:none;}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .stamp-big{ mix-blend-mode:screen; opacity:.5; } }
+:root[data-theme="dark"] .stamp-big{ mix-blend-mode:screen; opacity:.5; }
+.success p{font-size:.85rem; color:var(--ink-soft); line-height:1.7; max-width:30ch; margin:8px auto 0;}
+
+/* ---------------- questionnaire ---------------- */
+.qa-block{margin-bottom:18px;}
+.qa-block .ql{font-size:.84rem; font-weight:700; margin-bottom:8px;}
+.opt-row{display:flex; flex-wrap:wrap; gap:8px;}
+.opt-chip{padding:8px 16px; border-radius:20px; border:1px solid var(--line); background:var(--panel); font-size:.82rem; cursor:pointer; color:var(--ink);}
+.opt-chip.selected{background:var(--clay); border-color:var(--clay); color:#fff;}
+.qa-sub{margin-top:10px;}
+.qa-sub input{width:100%; border:1px solid var(--line); border-radius:10px; padding:9px 12px; background:var(--panel); color:var(--ink); font-size:.86rem; outline:none;}
+.qa-sub input:focus{border-color:var(--clay);}
+
+/* ---------------- LINE-style notice preview ---------------- */
+.notice-label{font-size:.72rem; color:var(--ink-faint); text-align:center; margin:18px 0 8px;}
+.bubble{background:var(--panel); border:1px solid var(--line); border-radius:16px; border-top-left-radius:4px; padding:14px 16px; font-size:.8rem; line-height:1.7; box-shadow:0 8px 18px -12px rgba(60,40,25,.3); text-align:left;}
+.bubble b{color:var(--clay-dim);}
+.auto-list{margin-top:12px; padding:0; list-style:none; font-size:.74rem; color:var(--ink-faint); line-height:1.9;}
+.auto-list li::before{content:"·"; color:var(--moss); margin-right:6px; font-weight:900;}
+.line-cta{width:100%; margin-top:14px; background:var(--moss); color:#fff; font-weight:700; padding:13px; border-radius:14px; font-size:.86rem; border:none; cursor:pointer;}
+.line-cta:hover{filter:brightness(.95);}
+
+/* ---------------- 預約須知 ---------------- */
+.rules-link{display:block; text-align:center; font-size:.72rem; color:var(--ink-faint); text-decoration:underline; text-underline-offset:2px; margin:2px 0 4px; cursor:pointer; background:none; border:none; width:100%;}
+.rules-link:hover{color:var(--clay-dim);}
+.rules-panel{margin:0 16px 14px; background:var(--clay-pale); border-radius:14px; padding:14px 16px; font-size:.76rem; color:var(--ink-soft); line-height:1.8;}
+.rules-panel.hidden{display:none;}
+.rules-panel ul{margin:0; padding-left:1.1em;}
+.rules-panel .divider{border-top:1px dashed var(--clay-soft); margin:12px 0; padding-top:10px;}
+.rules-panel .store-line{display:flex; gap:10px; align-items:flex-start; margin-bottom:4px;}
+.rules-panel .store-line .ic{flex-shrink:0; width:2.4em; color:var(--clay-dim); font-weight:600;}
+.rules-note{font-size:.7rem; color:var(--ink-faint); text-align:center; margin-top:10px;}
+
+/* ---------------- 服務選單 ---------------- */
+.svc-grid{display:flex; flex-direction:column; gap:8px;}
+.svc-chip{display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:14px; border:1.5px solid var(--line); background:var(--panel); cursor:pointer; text-align:left; width:100%;}
+.svc-chip .name{font-weight:700; font-size:.86rem;}
+.svc-chip .dur{font-size:.7rem; color:var(--ink-faint); margin-top:2px;}
+.svc-chip .price{font-family:-apple-system, BlinkMacSystemFont, 'PingFang TC', 'Helvetica Neue', 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; font-weight:700; font-size:.88rem; flex-shrink:0; margin-left:10px;}
+.svc-chip.selected{background:var(--clay-pale); border-color:var(--clay);}
+.svc-chip.selected .price{color:var(--clay-dim);}
+
+/* ---------------- 狀態徽章 ---------------- */
+.status-pill{display:inline-block; margin:6px 0 2px; padding:4px 14px; border-radius:20px; font-size:.72rem; font-weight:700; background:var(--gold-pale); color:var(--gold);}
+
+/* ---------------- 示範切換（非正式畫面） ---------------- */
+.demo-switch{position:sticky; top:0; z-index:10; background:var(--panel-2); border-bottom:1px dashed var(--line); padding:10px 16px; display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:.7rem; color:var(--ink-faint);}
+.demo-switch button{font-size:.72rem; padding:5px 13px; border-radius:20px; border:1px solid var(--line); background:var(--panel); color:var(--ink-soft); cursor:pointer;}
+.demo-switch button.active{background:var(--clay); border-color:var(--clay); color:#fff;}
+.platform-credit{text-align:center; font-size:.64rem; color:var(--ink-faint); padding:22px 16px 4px; letter-spacing:.04em;}
+</style>
+
+<div class="demo-switch">
+  <span>示範控制（非正式畫面）— 同一個頁面依店家在後台設定的產業類別自動變化：</span>
+  <button type="button" data-profile="beauty" id="btnBeauty">美甲美睫店</button>
+  <button type="button" data-profile="realtor" id="btnRealtor">房屋仲介</button>
+  <button type="button" data-profile="consult" id="btnConsult">財務顧問</button>
+  <button type="button" data-profile="photo" id="btnPhoto">攝影工作室</button>
+</div>
+
+<div class="screen" id="screen">
+        <div class="brandbar">
+          <div class="logo serif" id="brandLogo">UIUX</div>
+          <div class="tag" id="brandTag">選美容師 → 選日期 → 選時段 → 前置表單</div>
+        </div>
+
+        <div class="promo-banner" id="promoBanner" hidden></div>
+
+        <button class="rules-link" id="rulesToggle">查看預約須知與門市資訊</button>
+        <div class="rules-panel hidden" id="rulesPanel">
+          <ul id="rulesList"></ul>
+          <div class="divider" id="storeInfo"></div>
+        </div>
+
+        <div class="steps-row" id="stepsRow"></div>
+
+        <div class="pane" id="paneStaff">
+          <h3 id="staffStepTitle">第一步：選擇美容師</h3>
+          <div class="staff-grid" id="staffGrid"></div>
+        </div>
+
+        <div class="pane hidden" id="paneDate">
+          <button class="back" id="backToStaff">‹ 重選美容師</button>
+          <h3>第二步：選擇日期</h3>
+          <div class="day-strip" id="dayStrip"></div>
+        </div>
+
+        <div class="pane hidden" id="paneTime">
+          <button class="back" id="backToDate">‹ 重選日期</button>
+          <h3>第三步：選擇時段</h3>
+          <div id="slotWrap"></div>
+        </div>
+
+        <div class="pane hidden" id="paneQuiz">
+          <button class="back" id="backToTime">‹ 重選時段</button>
+          <h3 id="quizTitle">第四步：預約前置表單</h3>
+          <div id="quizWrap"></div>
+          <button class="btn-main" id="quizNextBtn">下一步：填寫資料</button>
+          <div class="hint" id="quizHint">題目由店家依產業自行設定</div>
+        </div>
+
+        <div class="pane hidden" id="paneForm">
+          <button class="back" id="backToQuiz">‹ 重填問卷</button>
+          <h3>第五步：填寫預約資料</h3>
+          <div class="recap-card" id="recapBox"></div>
+          <div class="qa-block">
+            <div class="ql">服務項目 * <span style="font-weight:400; color:var(--ink-faint);">（價格與時長會即時顯示）</span></div>
+            <div class="svc-grid" id="svcGrid"></div>
+          </div>
+          <div class="form-row"><label>姓名</label><input id="fName" placeholder="您的姓名"></div>
+          <div class="form-row"><label>電話</label><input id="fPhone" placeholder="09xx-xxx-xxx"></div>
+          <div class="form-row"><label>備註</label><textarea id="fNote" placeholder="有其他需求可以先告訴我們"></textarea></div>
+          <div class="rules-note">送出預約即表示您已閱讀並同意<a href="#" id="rulesNoteLink" style="color:var(--clay-dim);">預約須知</a>：<span id="rulesNoteText">如需取消請提前 24 小時告知</span></div>
+          <button class="btn-main" id="submitBtn">送出預約</button>
+          <div class="hint">這是示範原型,按下送出不會真的建立預約</div>
+        </div>
+
+        <div class="pane hidden" id="paneSuccess">
+          <div class="success">
+            <div class="stamp-wrap">
+              <h3>預約已送出！</h3>
+              <div class="stamp-big">受理中</div>
+            </div>
+            <div class="status-pill">目前狀態：待確認</div>
+            <p>店家將於營業時間內確認您的預約。已綁定 LINE 會直接收到通知,尚未綁定則會以電話與您聯繫。</p>
+          </div>
+          <div class="notice-label">— 系統將自動發送這則 LINE 訊息 —</div>
+          <div class="bubble" id="lineBubble"><b>UIUX 預約成功通知</b><br>已為您預約完成,期待與您相見。</div>
+          <ul class="auto-list">
+            <li id="pointsNote"></li>
+            <li>預約前一天會再傳訊息提醒您</li>
+            <li>完成服務後自動致謝並邀請留下評價</li>
+            <li>若您或店家取消,時段會立即釋出給其他人預約</li>
+          </ul>
+          <button class="line-cta" id="lineBindBtn">加 LINE 好友並開啟自動提醒</button>
+          <div class="rules-note">綁定一次,之後每次預約都會自動收到通知,不用重複操作</div>
+          <button class="btn-ghost" id="resetBtn" style="margin:14px 22px 0;">再預約一筆（重看一次流程）</button>
+        </div>
+
+        <div class="platform-credit">Powered by UIUX</div>
+
+</div>
+
+<script>
+/* ============================================================
+   每家店的「檔案」—— 職業類別、服務、問卷題目、規則、門市資訊、
+   活動,全部由店家在後台自己填寫設定。這裡放兩個範例檔案,
+   示範同一套顧客端頁面套用不同店家資料後,畫面會完全不一樣。
+   ============================================================ */
+const PROFILES = {
+  beauty: {
+    name:'涵語美甲美睫', roleLabel:'美容師', industryLabel:'美髮美甲',
+    staff:[
+      {name:'涵', full:'林芯涵', tag:'手足光療', start:10, end:19, color:'#C9938A', busy:[0,3,4,9]},
+      {name:'蓁', full:'黃品蓁', tag:'剪燙造型', start:11, end:20, color:'#8A9D8B', busy:[1,2,6,10]},
+      {name:'語', full:'周語彤', tag:'美睫接睫', start:10, end:18, color:'#7A9BAD', busy:[2,5,8]}
+    ],
+    services:[
+      {name:'光療美甲', dur:60, price:1200},
+      {name:'手足光療', dur:90, price:1600},
+      {name:'卸甲重做', dur:45, price:600},
+      {name:'剪髮造型', dur:50, price:900},
+      {name:'燙髮', dur:120, price:2400},
+      {name:'美睫嫁接', dur:80, price:1800},
+      {name:'補睫', dur:40, price:900}
+    ],
+    quiz:[
+      {key:'first', q:'是否第一次來店？', type:'choice', opts:[{l:'是,第一次來',v:'是'},{l:'不是,來過幾次了',v:'否'}]},
+      {key:'length', q:'目前髮長？', type:'choice', opts:[{l:'短髮',v:'短'},{l:'中長髮',v:'中'},{l:'長髮',v:'長'}]},
+      {key:'dye', q:'是否有想要染燙？', type:'choice-sub', opts:[{l:'有想染／燙',v:'是'},{l:'先不用',v:'否'}], subTrigger:'是', subPlaceholder:'想要的風格,例如：奶茶色挑染'}
+    ],
+    rules:{advance:30, cancelHours:24, noShowLimit:3, closedNote:'每週一公休、12:00–13:00 午休不開放預約'},
+    store:{addr:'台北市大安區安和路一段 12 號 2 樓（近大安站 3 號出口）', phone:'02-2755-1234（可電話詢問或取消預約）', hours:'週二至週日 10:00–20:00,週一公休'},
+    activities:[
+      {name:'母親節手足光療優惠', start:new Date('2026-05-01T00:00:00'), end:new Date('2026-05-12T23:59:59'), content:'指定方案 8 折', code:'MOM8'},
+      {name:'新客首次體驗', start:null, end:null, content:'首次到店 9 折', code:null}
+    ]
+  },
+  realtor: {
+    name:'安家不動產', roleLabel:'房仲業務', industryLabel:'房仲看屋',
+    staff:[
+      {name:'翔', full:'陳柏翔', tag:'豪宅專案', start:10, end:19, color:'#C9938A', busy:[1,5]},
+      {name:'婷', full:'李佳婷', tag:'首購族群', start:9, end:18, color:'#8A9D8B', busy:[2,4,7]},
+      {name:'哲', full:'王建哲', tag:'店面商辦', start:11, end:20, color:'#7A9BAD', busy:[0,3,8]}
+    ],
+    services:[
+      {name:'單一物件帶看', dur:60, price:0},
+      {name:'多物件比較看屋（最多 3 間）', dur:150, price:0},
+      {name:'投資置產諮詢', dur:45, price:0}
+    ],
+    quiz:[
+      {key:'first', q:'是否已有配合的房仲？', type:'choice', opts:[{l:'是',v:'是'},{l:'否',v:'否'}]},
+      {key:'size', q:'想看的坪數？', type:'choice', opts:[{l:'20坪以下',v:'20坪以下'},{l:'20–35坪',v:'20–35坪'},{l:'35坪以上',v:'35坪以上'}]},
+      {key:'budget', q:'預算範圍？', type:'text', placeholder:'例如：800萬–1200萬'}
+    ],
+    rules:{advance:14, cancelHours:12, noShowLimit:2, closedNote:'每週日公休'},
+    store:{addr:'台北市信義區松仁路 88 號 12 樓', phone:'02-8788-6600（服務時間內可電話預約）', hours:'週一至週六 9:00–20:00,週日公休'},
+    activities:[
+      {name:'新案優先看屋', start:null, end:null, content:'預約看屋即贈接送服務', code:null}
+    ]
+  },
+  consult: {
+    name:'明途財務顧問', roleLabel:'顧問', industryLabel:'顧問諮詢',
+    staff:[
+      {name:'珊', full:'吳曉珊', tag:'退休規劃', start:10, end:19, color:'#C9938A', busy:[2,6]},
+      {name:'凱', full:'許柏凱', tag:'保險健檢', start:9, end:18, color:'#8A9D8B', busy:[1,4,9]},
+      {name:'穎', full:'林子穎', tag:'投資理財', start:11, end:20, color:'#7A9BAD', busy:[0,5,7]}
+    ],
+    services:[
+      {name:'首次財務健檢', dur:60, price:0},
+      {name:'保險保單健診', dur:45, price:0},
+      {name:'退休金規劃諮詢', dur:90, price:1500}
+    ],
+    quiz:[
+      {key:'first', q:'是否第一次諮詢？', type:'choice', opts:[{l:'是',v:'是'},{l:'否',v:'否'}]},
+      {key:'topic', q:'希望諮詢的主題？', type:'choice', opts:[{l:'財務規劃',v:'財務規劃'},{l:'保險健檢',v:'保險健檢'},{l:'其他',v:'其他'}]},
+      {key:'need', q:'目前遇到的困難？', type:'text', placeholder:'簡述目前想解決的問題'}
+    ],
+    rules:{advance:21, cancelHours:24, noShowLimit:2, closedNote:'每週六、日公休'},
+    store:{addr:'台北市中山區南京東路二段 50 號 8 樓', phone:'02-2521-3300（服務時間內可電話預約）', hours:'週一至週五 9:00–18:00,週六日公休'},
+    activities:[
+      {name:'首次健檢免費體驗', start:null, end:null, content:'首次財務健檢完全免費', code:null}
+    ]
+  },
+  photo: {
+    name:'光合影像工作室', roleLabel:'攝影師', industryLabel:'攝影棚拍',
+    staff:[
+      {name:'辰', full:'張以辰', tag:'個人寫真', start:11, end:20, color:'#C9938A', busy:[0,4,8]},
+      {name:'羽', full:'黃書羽', tag:'形象照', start:10, end:19, color:'#8A9D8B', busy:[2,3,7]},
+      {name:'霖', full:'蔡秉霖', tag:'商品攝影', start:9, end:18, color:'#7A9BAD', busy:[1,5,6]}
+    ],
+    services:[
+      {name:'個人寫真（含化妝）', dur:180, price:4800},
+      {name:'形象照方案', dur:90, price:2800},
+      {name:'商品攝影（單一產品）', dur:60, price:2000}
+    ],
+    quiz:[
+      {key:'first', q:'是否第一次拍攝？', type:'choice', opts:[{l:'是',v:'是'},{l:'否',v:'否'}]},
+      {key:'type', q:'想拍攝的類型？', type:'choice', opts:[{l:'個人寫真',v:'個人寫真'},{l:'形象照',v:'形象照'},{l:'商品攝影',v:'商品攝影'}]},
+      {key:'makeup', q:'是否需要化妝造型？', type:'choice', opts:[{l:'需要',v:'需要'},{l:'不需要',v:'不需要'}]}
+    ],
+    rules:{advance:45, cancelHours:48, noShowLimit:1, closedNote:'每週二公休'},
+    store:{addr:'台北市松山區八德路四段 32 號 3 樓', phone:'02-2760-8899（棚拍檔期有限,建議提前預約）', hours:'週三至週一 10:00–21:00,週二公休'},
+    activities:[]
+  }
+};
+let shop = PROFILES.beauty;
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const dowNames = ['日','一','二','三','四','五','六'];
+
+const state = {step:1, staff:null, date:null, time:null, service:null, quiz:{}};
+
+function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!==undefined) e.textContent=text; return e; }
+function pad(n){ return String(n).padStart(2,'0'); }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function scrollTop(){ window.scrollTo({top:0, behavior: reduceMotion ? 'auto' : 'smooth'}); }
+
+function renderStaffGrid(){
+  const wrap = document.getElementById('staffGrid');
+  wrap.innerHTML = '';
+  shop.staff.forEach(s=>{
+    const card = el('div','staff-card');
+    card.tabIndex = 0;
+    card.innerHTML = `<div class="avatar" style="background:${s.color}">${s.name}</div><b>${s.full}</b><span class="staff-tag">${s.tag}</span><span class="staff-hours">${pad(s.start)}:00–${pad(s.end)}:00</span>`;
+    const pick = ()=>{ state.staff=s; state.date=null; state.time=null; renderRecap(); goStep(2); };
+    card.onclick = pick;
+    card.onkeydown = e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pick(); } };
+    wrap.appendChild(card);
+  });
+}
+
+function renderDayStrip(){
+  const wrap = document.getElementById('dayStrip');
+  wrap.innerHTML = '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  for(let i=0;i<10;i++){
+    const d = addDays(today,i);
+    const chip = el('div','day-chip'+(state.date && d.getTime()===state.date.getTime() ? ' active':''));
+    chip.tabIndex = 0;
+    chip.innerHTML = `<span class="dow">${i===0?'今天':'週'+dowNames[d.getDay()]}</span><span class="num">${d.getMonth()+1}/${d.getDate()}</span>`;
+    const pick = ()=>{ state.date=d; state.time=null; renderRecap(); goStep(3); };
+    chip.onclick = pick;
+    chip.onkeydown = e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pick(); } };
+    wrap.appendChild(chip);
+  }
+}
+
+function renderSlots(){
+  const wrap = document.getElementById('slotWrap');
+  wrap.innerHTML = '';
+  if(!state.staff || !state.date) return;
+  const groups = [
+    {label:'上午', from:state.staff.start, to:12},
+    {label:'下午', from:12, to:17},
+    {label:'晚上', from:17, to:state.staff.end}
+  ];
+  const now = new Date();
+  let any = false;
+  groups.forEach(g=>{
+    if(g.from>=g.to) return;
+    const times = [];
+    for(let mins=g.from*60; mins<g.to*60; mins+=30) times.push(mins);
+    if(times.length===0) return;
+    any = true;
+    const section = el('div','slot-group');
+    section.appendChild(el('h4', null, g.label));
+    const grid = el('div','slot-grid');
+    times.forEach(mins=>{
+      const idx = Math.round((mins - state.staff.start*60)/30);
+      const slotDate = new Date(state.date); slotDate.setHours(0,0,0,0); slotDate.setMinutes(mins);
+      const isPast = slotDate < now;
+      const isBusy = state.staff.busy.includes(idx);
+      const btn = el('button','slot-btn', `${pad(Math.floor(mins/60))}:${pad(mins%60)}`);
+      if(isPast||isBusy){ btn.disabled = true; }
+      else{
+        if(state.time && state.time.getTime()===slotDate.getTime()) btn.classList.add('selected');
+        btn.onclick = ()=>{ state.time = slotDate; renderRecap(); setTimeout(()=>goStep(4), reduceMotion?0:150); };
+      }
+      grid.appendChild(btn);
+    });
+    section.appendChild(grid);
+    wrap.appendChild(section);
+  });
+  if(!any){ wrap.innerHTML = '<div class="empty">這天沒有可預約的時段</div>'; }
+}
+
+function renderSvcGrid(){
+  const wrap = document.getElementById('svcGrid');
+  wrap.innerHTML = '';
+  shop.services.forEach(s=>{
+    const chip = el('button','svc-chip'+(state.service===s?' selected':''));
+    chip.type = 'button';
+    const priceLabel = s.price === 0 ? '免費' : ('$'+s.price);
+    chip.innerHTML = `<div><div class="name">${s.name}</div><div class="dur">約 ${s.dur} 分鐘</div></div><div class="price">${priceLabel}</div>`;
+    chip.onclick = ()=>{ state.service = s; renderSvcGrid(); renderRecap(); };
+    wrap.appendChild(chip);
+  });
+}
+
+function renderQuiz(){
+  const wrap = document.getElementById('quizWrap');
+  wrap.innerHTML = '';
+  shop.quiz.forEach(item=>{
+    const block = el('div','qa-block');
+    block.appendChild(el('div','ql', item.q));
+    if(item.type === 'text'){
+      const sub = el('div','qa-sub');
+      sub.style.marginTop = '0';
+      const input = document.createElement('input');
+      input.placeholder = item.placeholder || '';
+      input.oninput = e=>{ state.quiz[item.key] = e.target.value; };
+      sub.appendChild(input);
+      block.appendChild(sub);
+    } else {
+      const row = el('div','opt-row');
+      item.opts.forEach(o=>{
+        const chip = el('button','opt-chip', o.l);
+        chip.type = 'button';
+        chip.onclick = ()=>{
+          row.querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('selected'));
+          chip.classList.add('selected');
+          state.quiz[item.key] = o.v;
+          if(item.type==='choice-sub'){
+            const subEl = block.querySelector('.qa-sub');
+            if(subEl) subEl.classList.toggle('hidden', o.v !== item.subTrigger);
+          }
+        };
+        row.appendChild(chip);
+      });
+      block.appendChild(row);
+      if(item.type==='choice-sub'){
+        const sub = el('div','qa-sub hidden');
+        const input = document.createElement('input');
+        input.placeholder = item.subPlaceholder || '';
+        input.oninput = e=>{ state.quiz[item.key+'Sub'] = e.target.value; };
+        sub.appendChild(input);
+        block.appendChild(sub);
+      }
+    }
+    wrap.appendChild(block);
+  });
+}
+
+function renderRulesPanel(){
+  const r = shop.rules;
+  document.getElementById('rulesList').innerHTML = `
+    <li>最早可提前 <b>${r.advance} 天</b>預約</li>
+    <li>如需取消,請提前 <b>${r.cancelHours} 小時</b>告知,逾期未到將列入未到紀錄</li>
+    <li>連續 <b>${r.noShowLimit} 次未到</b>,系統將暫停預約資格</li>
+    <li>${r.closedNote}</li>`;
+  const st = shop.store;
+  document.getElementById('storeInfo').innerHTML = `
+    <div class="store-line"><span class="ic">地址</span><span>${st.addr}</span></div>
+    <div class="store-line"><span class="ic">電話</span><span>${st.phone}</span></div>
+    <div class="store-line"><span class="ic">時間</span><span>${st.hours}</span></div>`;
+  document.getElementById('rulesNoteText').textContent = `如需取消請提前 ${r.cancelHours} 小時告知`;
+}
+
+function renderPromo(){
+  const banner = document.getElementById('promoBanner');
+  const now = new Date();
+  const active = shop.activities.find(a => (!a.start || now>=a.start) && (!a.end || now<=a.end));
+  if(active){
+    banner.textContent = `現正優惠｜${active.content}${active.code ? '（優惠碼：'+active.code+'）' : '（免優惠碼）'}`;
+    banner.hidden = false;
+  } else {
+    banner.hidden = true;
+  }
+}
+
+function renderRecap(){
+  const wrap = document.getElementById('recapBox');
+  wrap.innerHTML = '';
+  if(state.staff){
+    const r = el('div','recap-row');
+    r.innerHTML = `<span class="k">${shop.roleLabel}</span><span class="v">${state.staff.full}・${state.staff.tag}</span>`;
+    wrap.appendChild(r);
+  }
+  if(state.date){
+    const r = el('div','recap-row');
+    r.innerHTML = `<span class="k">日期</span><span class="v mono">${state.date.getMonth()+1}/${state.date.getDate()}（週${dowNames[state.date.getDay()]}）</span>`;
+    wrap.appendChild(r);
+  }
+  if(state.time){
+    const r = el('div','recap-row');
+    r.innerHTML = `<span class="k">時段</span><span class="v mono">${pad(state.time.getHours())}:${pad(state.time.getMinutes())}</span>`;
+    wrap.appendChild(r);
+  }
+  if(state.service){
+    const priceLabel = state.service.price === 0 ? '免費' : ('$'+state.service.price);
+    const r = el('div','recap-row');
+    r.innerHTML = `<span class="k">服務／費用</span><span class="v">${state.service.name}・<span class="mono">${priceLabel}</span></span>`;
+    wrap.appendChild(r);
+  }
+}
+
+function renderSteps(){
+  const wrap = document.getElementById('stepsRow');
+  wrap.innerHTML = '';
+  const labels = [shop.roleLabel,'日期','時段','問卷','資料'];
+  labels.forEach((label,i)=>{
+    const n = i+1;
+    const item = el('div','step-item'+(n===state.step?' active':(n<state.step?' done':'')));
+    item.innerHTML = `<span class="n mono">0${n}</span>${label}`;
+    wrap.appendChild(item);
+  });
+}
+
+function goStep(n){
+  state.step = n;
+  document.getElementById('paneStaff').classList.toggle('hidden', n!==1);
+  document.getElementById('paneDate').classList.toggle('hidden', n!==2);
+  document.getElementById('paneTime').classList.toggle('hidden', n!==3);
+  document.getElementById('paneQuiz').classList.toggle('hidden', n!==4);
+  document.getElementById('paneForm').classList.toggle('hidden', n!==5);
+  document.getElementById('paneSuccess').classList.add('hidden');
+  renderSteps();
+  if(n===2) renderDayStrip();
+  if(n===3) renderSlots();
+  if(n===5) renderRecap();
+  scrollTop();
+}
+
+document.getElementById('quizNextBtn').onclick = ()=>goStep(5);
+
+function submit(){
+  if(!state.service){ alert('請選擇服務項目'); return; }
+  const name = document.getElementById('fName').value.trim();
+  document.getElementById('paneForm').classList.add('hidden');
+  document.getElementById('paneSuccess').classList.remove('hidden');
+  const p = document.querySelector('#paneSuccess p');
+  p.innerHTML = (name?`${name}您好，`:'') + '店家將於營業時間內確認您的預約。已綁定 LINE 會直接收到通知,尚未綁定則會以電話與您聯繫。';
+  const bubble = document.getElementById('lineBubble');
+  if(state.staff && state.date && state.time && state.service){
+    const dateStr = `${state.date.getMonth()+1}/${state.date.getDate()}（週${dowNames[state.date.getDay()]}）`;
+    const timeStr = `${pad(state.time.getHours())}:${pad(state.time.getMinutes())}`;
+    const priceLabel = state.service.price === 0 ? '免費' : ('費用 $'+state.service.price);
+    bubble.innerHTML = `<b>${shop.name} 預約成功通知</b><br>${name||'您'}好,已為您預約 ${dateStr} ${timeStr}・${state.staff.full}・${state.service.name},預計操作 ${state.service.dur} 分鐘,${priceLabel}。期待與您相見。`;
+  }
+  const ptsNote = document.getElementById('pointsNote');
+  if(state.service && state.service.price > 0){
+    const pts = Math.floor(state.service.price/100);
+    ptsNote.textContent = `完成後預計可累積 ${pts} 點會員點數（依店家點數規則計算）`;
+  } else {
+    ptsNote.textContent = '';
+  }
+  scrollTop();
+}
+
+function reset(){
+  state.step=1; state.staff=null; state.date=null; state.time=null; state.service=null; state.quiz={};
+  ['fName','fPhone','fNote'].forEach(id=>document.getElementById(id).value='');
+  renderSvcGrid();
+  renderQuiz();
+  renderRecap();
+  document.getElementById('paneSuccess').classList.add('hidden');
+  goStep(1);
+}
+
+document.getElementById('backToStaff').onclick = ()=>goStep(1);
+document.getElementById('backToDate').onclick = ()=>goStep(2);
+document.getElementById('backToTime').onclick = ()=>goStep(3);
+document.getElementById('backToQuiz').onclick = ()=>goStep(4);
+document.getElementById('submitBtn').onclick = submit;
+document.getElementById('resetBtn').onclick = reset;
+
+const rulesPanel = document.getElementById('rulesPanel');
+function toggleRules(e){ e.preventDefault(); rulesPanel.classList.toggle('hidden'); if(!rulesPanel.classList.contains('hidden')) rulesPanel.scrollIntoView({block:'nearest', behavior: reduceMotion?'auto':'smooth'}); }
+document.getElementById('rulesToggle').onclick = toggleRules;
+document.getElementById('rulesNoteLink').onclick = e=>{ goStep(1); toggleRules(e); };
+document.getElementById('lineBindBtn').onclick = ()=>{ alert('示範原型：這裡會開啟 LINE 登入授權,綁定一次後,之後預約提醒都會自動發送到這個 LINE 帳號。'); };
+
+function applyProfile(key){
+  shop = PROFILES[key];
+  document.getElementById('brandLogo').textContent = shop.name;
+  document.getElementById('brandTag').textContent = `選${shop.roleLabel} → 選日期 → 選時段 → 前置表單`;
+  document.getElementById('staffStepTitle').textContent = `第一步：選擇${shop.roleLabel}`;
+  document.getElementById('backToStaff').textContent = `‹ 重選${shop.roleLabel}`;
+  document.getElementById('quizHint').textContent = `目前套用「${shop.industryLabel}」模板題目,由店家自行編輯`;
+  document.querySelectorAll('.demo-switch button').forEach(b=>b.classList.toggle('active', b.dataset.profile===key));
+
+  state.step=1; state.staff=null; state.date=null; state.time=null; state.service=null; state.quiz={};
+  ['fName','fPhone','fNote'].forEach(id=>document.getElementById(id).value='');
+
+  renderStaffGrid();
+  renderSvcGrid();
+  renderQuiz();
+  renderRulesPanel();
+  renderRecap();
+  renderSteps();
+  renderPromo();
+  document.getElementById('paneSuccess').classList.add('hidden');
+  goStep(1);
+}
+document.getElementById('btnBeauty').onclick = ()=>applyProfile('beauty');
+document.getElementById('btnRealtor').onclick = ()=>applyProfile('realtor');
+document.getElementById('btnConsult').onclick = ()=>applyProfile('consult');
+document.getElementById('btnPhoto').onclick = ()=>applyProfile('photo');
+
+applyProfile('beauty');
+</script>
+
+</body></html>
