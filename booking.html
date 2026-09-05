@@ -40,8 +40,6 @@ main{max-width:600px; margin:0 auto; padding:18px 16px 30px;}
 
 .rules-link{display:block; width:100%; text-align:center; font-size:.76rem; color:var(--gray); text-decoration:underline; text-underline-offset:2px; margin-bottom:12px;}
 .rules-panel{background:var(--light-pink); border-radius:14px; padding:14px 16px; font-size:.78rem; color:var(--medium); line-height:1.8; margin-bottom:16px;}
-.rules-panel ul{margin:0; padding-left:1.1em;}
-.rules-panel .divider{border-top:1px dashed var(--soft-pink); margin:10px 0; padding-top:10px;}
 .rules-panel .store-line{display:flex; gap:8px; margin-bottom:4px;}
 .rules-panel .store-line b{flex-shrink:0; width:2.6em;}
 
@@ -124,7 +122,7 @@ main{max-width:600px; margin:0 auto; padding:18px 16px 30px;}
 </header>
 
 <main id="mainWrap">
-  <button class="rules-link" id="rulesToggle">查看預約須知與門市資訊</button>
+  <button class="rules-link hidden" id="rulesToggle">查看門市資訊</button>
   <div class="rules-panel hidden" id="rulesPanel"></div>
 
   <div class="steps" id="stepsDots"></div>
@@ -243,23 +241,20 @@ function init(){
   };
 }
 
-/* ---- 預約須知 ---- */
+/* ---- 門市資訊 ---- */
 function renderRulesPanel(){
-  const r = Object.assign({advanceDays:30, allowCancel:true, cancelHours:24, noShowLimit:3}, salonSettings.bookingRules||{});
   const st = Object.assign({address:'', phone:''}, salonSettings.storeInfo||{});
-  let html = '<ul>';
-  html += `<li>最早可提前 <b>${r.advanceDays} 天</b>預約</li>`;
-  if(r.allowCancel) html += `<li>如需取消，請提前 <b>${r.cancelHours} 小時</b>告知，逾期未到將列入未到紀錄</li>`;
-  else html += `<li>如需取消請致電店家處理</li>`;
-  html += `<li>連續 <b>${r.noShowLimit} 次未到</b>，系統將暫停預約資格</li>`;
-  html += '</ul>';
-  if(st.address || st.phone || salonSettings.bizStart!=null){
-    html += '<div class="divider">';
-    if(st.address) html += `<div class="store-line"><b>地址</b><span>${escapeHtml(st.address)}</span></div>`;
-    if(st.phone) html += `<div class="store-line"><b>電話</b><span>${escapeHtml(st.phone)}</span></div>`;
-    if(salonSettings.bizStart!=null) html += `<div class="store-line"><b>時間</b><span>每日 ${salonSettings.bizStart}:00–${salonSettings.bizEnd}:00</span></div>`;
-    html += '</div>';
+  const toggle = document.getElementById('rulesToggle');
+  if(!st.address && !st.phone && salonSettings.bizStart==null){
+    toggle.classList.add('hidden');
+    return;
   }
+  toggle.classList.remove('hidden');
+  let html = '<div class="store-line-group">';
+  if(st.address) html += `<div class="store-line"><b>地址</b><span>${escapeHtml(st.address)}</span></div>`;
+  if(st.phone) html += `<div class="store-line"><b>電話</b><span>${escapeHtml(st.phone)}</span></div>`;
+  if(salonSettings.bizStart!=null) html += `<div class="store-line"><b>時間</b><span>每日 ${salonSettings.bizStart}:00–${salonSettings.bizEnd}:00</span></div>`;
+  html += '</div>';
   document.getElementById('rulesPanel').innerHTML = html;
 }
 
